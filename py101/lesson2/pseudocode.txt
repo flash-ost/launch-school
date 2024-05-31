@@ -1,0 +1,109 @@
+1) A function that returns the sum of two numbers.
+    ------------------------------------------
+    # Given 2 integers
+    Add integers.
+    Return the result.
+    ------------------------------------------
+    START
+
+    # Given 2 integers
+    
+    SET sum = int1 + int2
+    PRINT sum
+
+    END
+
+2) A function that takes a list of strings, and returns a string
+that is all those strings concatenated together.
+    -------------------------------------------
+    # Given a list of strings
+    Concatenate the strings.
+    Return the result.
+    -------------------------------------------
+    START
+
+    # Given a list of strings
+    SET merged = concatenate elements of list
+
+    PRINT merged
+
+    END
+
+3) A function that takes a list of integers, and returns a new list
+with every other element from the original list, starting with the first element. For instance:
+every_other([1,4,7,2,5]) # => [1,7,5]
+    -------------------------------------------
+    # Given a list of integers
+    Create a new empty list.
+    Iterate over indexes of original list with step of 2.
+        Append the new list with element of original list that has given index.
+    Return the new list.
+    -------------------------------------------
+    START
+
+    # Given a list of integers
+    SET new_list = []
+    SET index = 0
+    WHILE index < length of original list - 1
+        append new_list with original_list[index]
+        index += 2
+    
+    PRINT new_list
+    END
+
+4) A function that determines the index of the 3rd occurrence of a given character in a string.
+For instance, if the given character is 'x' and the string is 'axbxcdxex',
+the function should return 6 (the index of the 3rd 'x').
+If the given character does not occur at least 3 times, return None.
+    ---------------------------------------------
+    # Given a string
+    Set counter to zero.
+    Set index to zero.
+    Iterate over characters of string using (range: 0 - length of string - 1)
+        if current character equals 'x'
+            Increment counter by 1
+            if counter equals 3
+                return index
+        Increment index by 1.
+    Return None.
+    ---------------------------------------------
+    START
+    # Given a string
+    SET counter = 0
+    SET index = 0
+    WHILE index < length of string
+        IF string[index] == 'x'
+            counter += 1
+            IF counter == 3
+                PRINT index
+
+        index += 1
+
+    PRINT None            
+    END
+5) A function that takes two lists of numbers and returns the result of merging the lists.
+The elements of the first list should become the elements at the even indexes of the returned list,
+while the elements of the second list should become the elements at the odd indexes. For instance:
+merge([1, 2, 3], [4, 5, 6]) # => [1, 4, 2, 5, 3, 6]
+    -----------------------------------------------
+    # Given 2 lists with equal number of elements (list1, list2)
+    Create new empty list.
+    Create index for iterating, initialize to 0.
+    Iterate over elements of both lists
+        Append new list with list1[index] of first list
+        Append new list with list2[index] of second list
+
+    Return new list.
+    -----------------------------------------------
+    START
+    # Given 2 lists with equal number of elements (list1, list2)
+    SET new_list = []
+    SET index = 0
+    WHILE index < length of list1
+        Append new_list with list1[index] of first list
+        Append new_list with list2[index] of second list
+
+    PRINT new_list
+    END
+
+

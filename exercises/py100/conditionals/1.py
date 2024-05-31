@@ -1,0 +1,8 @@
+"""
+Truthy vs. Falsy
+Without looking at your notes or the official documentation, try to recall all values that count as falsy in Python.
+"""
+# False
+# None
+# 0
+# Empty collections and sequences: '', (), [], {}, set(), range(0)
