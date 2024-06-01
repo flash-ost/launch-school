@@ -54,7 +54,7 @@ def another_round():
             answer = input().lower()
             if answer not in ['n', 'y', 'no', 'yes']:
                 raise ValueError
-            return answer not in ['n', 'no']
+            return answer in ['y', 'yes']
         except ValueError:
             prompt('Please enter a valid answer (Y for yes or N for no).')
 
