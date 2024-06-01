@@ -3,6 +3,11 @@ from os import system
 
 MONTHS_IN_YEAR = 12
 
+# Greet user
+def greet_user():
+    prompt('Welcome to Mortgage Calculator!')
+    prompt('------------------------------------------------------------')
+
 # Print a formatted message
 def prompt(message):
     print(f'==> {message}')
@@ -35,10 +40,10 @@ def calculate_monthly_payment(amount_input, apr_input, duration_input):
     return amount * (mpr_fraction / (1 - (1 + mpr_fraction) ** -duration))
 
 def display_summary(loan_amount, apr, loan_duration, monthly_payment):
-    prompt(f"""You entered
-    - Loan amount: ${loan_amount}
+    prompt(f"""You entered:
+    - loan amount: ${loan_amount}
     - APR: {apr}%
-    - Loan duration: {loan_duration} years
+    - loan duration: {loan_duration} years
     Your monthly payment is: ${round(monthly_payment, 2)}""")
 
 # Ask user for another round
@@ -53,15 +58,15 @@ def another_round():
         except ValueError:
             prompt('Please enter a valid answer (Y for yes or N for no).')
 
-prompt('Welcome to Mortgage Calculator!')
+greet_user()
 while True:
     # Prompt user for necessary input
-    amount_str = prompt_input("""Enter the loan amount without currency sign.
-    Example: 300000""")
-    apr_str = prompt_input("""Enter the APR without percent sign.
-    Example: 5""")
-    duration_str = prompt_input("""Enter the loan duration in years.
-    Example: 7.5""")
+    amount_str = prompt_input('Enter the loan amount without currency sign. '
+                              'Example: 300000')
+    apr_str = prompt_input('Enter the APR without percent sign. '
+                           'Example: 5')
+    duration_str = prompt_input('Enter the loan duration in years. '
+                                'Example: 7.5')
 
     # Calculate monthly payment and display summary
     payment = calculate_monthly_payment(amount_str, apr_str, duration_str)
