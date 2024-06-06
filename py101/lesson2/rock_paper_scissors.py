@@ -56,7 +56,7 @@ def prompt_input():
     # Ensure full name is stored
     if len(user_choice) <= 2:
         user_choice = VALID_CHOICES[user_choice]
-        
+
     return user_choice
 
 # Host a round
@@ -123,6 +123,7 @@ def display_game_summary(round_count, scoreboard):
 
 # Ask user for another game
 def another_game():
+    prompt('------------------------------------------------')
     prompt('Would you like to play another game? Y/N')
     answer = input()
     while True:
