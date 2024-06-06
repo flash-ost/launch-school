@@ -56,22 +56,25 @@ def prompt_input():
     # Ensure full name is stored
     if len(user_choice) <= 2:
         user_choice = VALID_CHOICES[user_choice]
+        
     return user_choice
 
 # Host a round
-def host_round():
+def host_round(round_count, scoreboard):
     prompt(f'ROUND {round_count}')
 
     # Gather input from user and computer
     user_choice = prompt_input()
     computer_choice = choice(tuple(VALID_CHOICES.values()))
 
-    # Display winner and score
+    # Determine winner and update score
     system('clear')
     round_winner = determine_winner(user_choice, computer_choice)
     if round_winner:
         scoreboard[round_winner] += 1
-    display_round_summary(user_choice, computer_choice, round_winner)
+
+    display_round_summary(user_choice, computer_choice, round_winner,
+                          round_count, scoreboard)
 
 # Determine winner (or tie)
 def determine_winner(user_choice, computer_choice):
@@ -81,7 +84,8 @@ def determine_winner(user_choice, computer_choice):
         else 'computer'
 
 # Display round summary
-def display_round_summary(user_choice, computer_choice, winner):
+def display_round_summary(user_choice, computer_choice, winner,
+                          round_count, scoreboard):
     prompt(f'ROUND {round_count} SUMMARY')
     prompt(f'You chose {user_choice}, computer chose {computer_choice}')
     match winner:
@@ -95,8 +99,18 @@ def display_round_summary(user_choice, computer_choice, winner):
            f'[{scoreboard['computer']}] COMPUTER')
     prompt('------------------------------------------------')
 
+# Host a game
+def host_game():
+    round_count = 0
+    scoreboard = {'user': 0, 'computer': 0}
+    while scoreboard['user'] < WINS_LIMIT \
+    and scoreboard['computer'] < WINS_LIMIT:
+        round_count += 1
+        host_round(round_count, scoreboard)
+    display_game_summary(round_count, scoreboard)
+
 # Display game summary
-def display_game_summary():
+def display_game_summary(round_count, scoreboard):
     prompt('GAME SUMMARY')
     if scoreboard['user'] == 3:
         prompt(f'You won a game after {round_count} rounds with score '
@@ -122,13 +136,7 @@ def another_game():
 # Main program
 greet_user()
 while True:
-    round_count = 0
-    scoreboard = {'user': 0, 'computer': 0}
-    while scoreboard['user'] < WINS_LIMIT \
-    and scoreboard['computer'] < WINS_LIMIT:
-        round_count += 1
-        host_round()
-    display_game_summary()
+    host_game()
 
     if not another_game():
         break
