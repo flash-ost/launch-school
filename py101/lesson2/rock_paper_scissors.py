@@ -1,6 +1,7 @@
 from random import choice
 from os import system
 
+VALID_ANSWERS = ['n', 'no', 'y', 'yes']
 VALID_CHOICES = {
     'r': 'rock',
     'p': 'paper',
@@ -8,7 +9,6 @@ VALID_CHOICES = {
     'l': 'lizard',
     'sp': 'spock',
 }
-VALID_ANSWERS = ['n', 'no', 'y', 'yes']
 WINNING_COMBOS = {
     'rock':     ['scissors', 'lizard'],
     'paper':    ['rock',     'spock'],
@@ -60,7 +60,7 @@ def prompt_input():
 
 # Host a round
 def host_round():
-    prompt(f'Round {round_count}')
+    prompt(f'ROUND {round_count}')
 
     # Gather input from user and computer
     user_choice = prompt_input()
@@ -71,7 +71,7 @@ def host_round():
     round_winner = determine_winner(user_choice, computer_choice)
     if round_winner:
         scoreboard[round_winner] += 1
-    display_round_result(user_choice, computer_choice, round_winner)
+    display_round_summary(user_choice, computer_choice, round_winner)
 
 # Determine winner (or tie)
 def determine_winner(user_choice, computer_choice):
@@ -80,9 +80,9 @@ def determine_winner(user_choice, computer_choice):
     return 'user' if computer_choice in WINNING_COMBOS[user_choice] \
         else 'computer'
 
-# Display round result
-def display_round_result(user_choice, computer_choice, winner):
-    prompt(f'Round {round_count} results')
+# Display round summary
+def display_round_summary(user_choice, computer_choice, winner):
+    prompt(f'ROUND {round_count} SUMMARY')
     prompt(f'You chose {user_choice}, computer chose {computer_choice}')
     match winner:
         case 'user':
@@ -95,8 +95,9 @@ def display_round_result(user_choice, computer_choice, winner):
            f'[{scoreboard['computer']}] COMPUTER')
     prompt('------------------------------------------------')
 
-# Display game result
-def display_game_result():
+# Display game summary
+def display_game_summary():
+    prompt('GAME SUMMARY')
     if scoreboard['user'] == 3:
         prompt(f'You won a game after {round_count} rounds with score '
                f'{scoreboard['user']}:{scoreboard['computer']}. '
@@ -127,7 +128,7 @@ while True:
     and scoreboard['computer'] < WINS_LIMIT:
         round_count += 1
         host_round()
-    display_game_result()
+    display_game_summary()
 
     if not another_game():
         break
