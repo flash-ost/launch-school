@@ -125,14 +125,14 @@ def display_game_summary(round_count, scoreboard):
 def another_game():
     prompt('------------------------------------------------')
     prompt('Would you like to play another game? Y/N')
-    answer = input()
+    answer = input().strip().lower()
     while True:
-        if answer.strip().lower() not in VALID_ANSWERS:
+        if answer not in VALID_ANSWERS:
             prompt('Please enter Y for yes or N for no.')
-            answer = input()
+            answer = input().strip().lower()
         else:
             break
-    return answer.strip().lower() in ['y', 'yes']
+    return answer in ['y', 'yes']
 
 # Main program
 greet_user()
