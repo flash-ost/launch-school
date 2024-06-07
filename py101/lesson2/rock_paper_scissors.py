@@ -45,13 +45,13 @@ def prompt_input():
     prompt('Choose one: ' + ', '.join(VALID_CHOICES.values()))
     prompt('You can also type abbreviated names: ' +
            ', '.join(VALID_CHOICES.keys()))
-    user_choice = input().lower()
+    user_choice = input().strip().lower()
 
     # Ensure input is valid
     while user_choice not in VALID_CHOICES \
     and user_choice not in VALID_CHOICES.values():
         prompt('That\'s not a valid choice')
-        user_choice = input()
+        user_choice = input().strip().lower()
 
     # Ensure full name is stored
     if len(user_choice) <= 2:
@@ -127,12 +127,12 @@ def another_game():
     prompt('Would you like to play another game? Y/N')
     answer = input()
     while True:
-        if answer.lower() not in VALID_ANSWERS:
+        if answer.strip().lower() not in VALID_ANSWERS:
             prompt('Please enter Y for yes or N for no.')
             answer = input()
         else:
             break
-    return answer.lower() in ['y', 'yes']
+    return answer.strip().lower() in ['y', 'yes']
 
 # Main program
 greet_user()
