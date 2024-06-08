@@ -170,3 +170,74 @@ Before Grandpa could stop him, Spot hit the Enter key with his tail. Did the fam
 
 # mess_with_demographics(munsters)
 # print(munsters)
+
+"""
+Question 8
+Function and method calls can take expressions as arguments. Suppose we define a function named rps as follows, which follows the classic rules of the rock-paper-scissors game, but with a slight twist: in the event of a tie, it just returns the choice made by both players.
+
+def rps(fist1, fist2):
+    if fist1 == "rock":
+        return "paper" if fist2 == "paper" else "rock"
+    elif fist1 == "paper":
+        return "scissors" if fist2 == "scissors" else "paper"
+    else:
+        return "rock" if fist2 == "rock" else "scissors"
+What does the following code output?
+
+print(rps(rps(rps("rock", "paper"), rps("rock", "scissors")), "rock"))
+"""
+# # paper: print(rps(rps('paper', 'rock'), "rock"))    
+# def rps(fist1, fist2):
+#     if fist1 == "rock":
+#         return "paper" if fist2 == "paper" else "rock"
+#     elif fist1 == "paper":
+#         return "scissors" if fist2 == "scissors" else "paper"
+#     else:
+#         return "rock" if fist2 == "rock" else "scissors"
+
+# print(rps(rps(rps("rock", "paper"), rps("rock", "scissors")), "rock"))
+
+"""
+Question 9
+Consider these two simple functions:
+
+def foo(param="no"):
+    return "yes"
+
+def bar(param="no"):
+    return param == "no" and foo() or "no"
+What will the following function invocation return?
+
+bar(foo())
+"""
+# bar('yes')
+# return 'yes' == 'no' and foo() or 'no'
+# return False and foo() or 'no' # foo() is not executed due to shortcircuiting (first part of and expression is False)
+# return False or 'no'
+# no
+# def foo(param="no"):
+#     return "yes"
+
+# def bar(param="no"):
+#     return param == "no" and foo() or "no"
+
+# print(bar(foo()))
+
+"""
+Question 10
+In Python, every object has a unique identifier that can be accessed using the id() function. This function returns the identity of an object, which is guaranteed to be unique for the object's lifetime. For certain basic immutable data types like short strings or integers, Python might reuse the memory address for objects with the same value. This is known as "interning".
+
+Given the following code, predict the output:
+
+a = 42
+b = 42
+c = a
+
+print(id(a) == id(b) == id(c))
+"""
+# # True
+# a = 42
+# b = 42
+# c = a
+
+# print(id(a) == id(b) == id(c))
