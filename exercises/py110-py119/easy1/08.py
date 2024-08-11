@@ -26,13 +26,49 @@ print(string_to_integer("570") == 570)    # True
 # Just int for storing converted number
 
 ## Algorithm
-# Create a dict with char digits corrsponding to numbers
+# Create a dict with char digits corresponding to numbers
 # Create var for converted number, initialize to 0
 # Iterate over chars in string:
 #   - multiply current num by 10, add new number by accessing dict value
 # Return number
 
-def string_to_integer(string):
+# def string_to_integer(string):
+#     DIGITS = {
+#               '0': 0,
+#               '1': 1,
+#               '2': 2,
+#               '3': 3,
+#               '4': 4,
+#               '5': 5,
+#               '6': 6,
+#               '7': 7,
+#               '8': 8,
+#               '9': 9,
+#               }
+    
+#     number = 0
+#     for char in string:
+#         number = 10 * number + DIGITS[char]
+
+#     return number    
+
+# print(string_to_integer("4321") == 4321)  # True
+# print(string_to_integer("570") == 570)    # True
+
+"""
+Further Exploration
+Write a hexadecimal_to_integer function that converts a string representing a hexadecimal number to its integer value. Hexadecimal numbers use base 16 instead of 10, and the characters A, B, C, D, E and F (and the lowercase equivalents) correspond to decimal values of 10-15.
+
+Example
+print(hexadecimal_to_integer('4D9f') == 19871)  # True
+"""
+
+# What to modify
+# Add A-F entries to dictionary
+# Replace decimal multiplier (10) with hexadecimal (16)
+# Convert letter from string to uppercase before looking up value in dictionary
+
+def hexadecimal_to_integer(string):
     DIGITS = {
               '0': 0,
               '1': 1,
@@ -44,13 +80,18 @@ def string_to_integer(string):
               '7': 7,
               '8': 8,
               '9': 9,
+              'A': 10,
+              'B': 11,
+              'C': 12,
+              'D': 13,
+              'E': 14,
+              'F': 15,
               }
     
     number = 0
     for char in string:
-        number = 10 * number + DIGITS[char]
+        number = 16 * number + DIGITS[char.upper()]
 
     return number    
 
-print(string_to_integer("4321") == 4321)  # True
-#print(string_to_integer("570") == 570)    # True
+print(hexadecimal_to_integer('4D9f') == 19871)  # True
