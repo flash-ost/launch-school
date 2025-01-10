@@ -11,57 +11,58 @@ You cannot leave gaps between blocks.
 Write a program that, given the number of available blocks, calculates the number of blocks left over after building the tallest possible valid structure.
 """
 
-## Understanding the Problem
-# Input:
-#   - number of available blocks
-# Output:
-#   - number of leftover blocks
+## Understanding
+# Input: integer - number of available blocks
+# Output: integer - number of leftover blocks after building the highest possible structure
 
-# Explicit rules:
-#   - layered structure
-#   - top layer consists of single block
-#   - 4 blocks in lower layer per 1 in upper layer
+# Explicit rules
+# - building blocks are cubes
+# - top layer is a single block
+# - block in upper layer must be supported by four blocks in a lower layer
+# - block in lower layer can support more than one block in upper layer
+# - no gaps between blocks allowed
 
-# Implicit rules:
-#   - The number of blocks in a layer is layer number * layer number.
+# Implicit rules
+# - number of blocks in layer correlates with that layer number
+# - number of blocks in layer: layer number squared
 
-# Questions:
-# - What is meant by gaps between blocks?
+# Clarifying questions
+# - How are upper blocks placed on the lower ones?
 
-## Examples and test cases
-# print(calculate_leftover_blocks(0) == 0)  # True
-# print(calculate_leftover_blocks(1) == 0)  # True   1 - 1 = 0
-# print(calculate_leftover_blocks(2) == 1)  # True   2 - 1 = 1
-# print(calculate_leftover_blocks(4) == 3)  # True   4 - 1 = 3
-# print(calculate_leftover_blocks(5) == 0)  # True   5 - (1 + 4) = 0
-# print(calculate_leftover_blocks(6) == 1)  # True   6 - (1 + 4) = 1
-# print(calculate_leftover_blocks(14) == 0) # True   14 - (1 + 4 + 9) = 0
-
-## Data Structures
-# We don't really need a complex data structure.
-# Several integers will be sufficient.
+## Data Structure
+# Just integer to store the number of blocks left after adding layers
 
 ## Algorithm
-# - Initialize var with remaining blocks to passed value
-# - Check whether there are any blocks
-# - If not, return 0. Else:
-# - Create a var with layer count (first = 1)
-# - Create a var with num of blocks needed for current layer
-# - While there are enough blocks to biuld a new layer:
-#   - update num of available blocks (build a layer)
-#   - update layer count
-#   - calculate num of blocks needed for a new layer
-# - Return number of leftover blocks
+# Initialize available_blocks variable to number of blocks provided as input
+# Initialize layer_number variable to 1
+# While available_blocks > 0:
+#   calculate num of blocks needed for current layer
+#   if there are enough blocks blocks to build it:     
+#       subtract num of blocks needed for this layer from num of available blocks
+#       increment layer_number by 1
+#   else:
+#       return available_blocks
 
-def calculate_leftover_blocks(blocks_remaining):
-    if blocks_remaining:
-        layer_num = 1
-        layer_blocks = 1
-        while blocks_remaining >= layer_blocks:
-            blocks_remaining -= layer_blocks
-            layer_num += 1
-            layer_blocks = layer_num ** 2
-    return blocks_remaining
+# def calculate_leftover_blocks(blocks_remaining):
+#     if blocks_remaining:
+#         layer_num = 1
+#         layer_blocks = 1
+#         while blocks_remaining >= layer_blocks:
+#             blocks_remaining -= layer_blocks
+#             layer_num += 1
+#             layer_blocks = layer_num ** 2
+#     return blocks_remaining
+
+def calculate_leftover_blocks(blocks):
+    available_blocks = blocks
+    layer_number = 1
+    layer_blocks = layer_number
+
+    while available_blocks >= layer_blocks:
+        available_blocks -= layer_blocks
+        layer_number += 1
+        layer_blocks = layer_number ** 2
+    return available_blocks   
 
 print(calculate_leftover_blocks(0) == 0)  # True
 print(calculate_leftover_blocks(1) == 0)  # True
