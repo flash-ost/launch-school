@@ -13,23 +13,23 @@ Compute and display the total age of the family's male members. Try working out 
 
 The result should be 444.
 """
-munsters = {
-    'Herman':  {'age': 32,  'gender': 'male'},
-    'Lily':    {'age': 30,  'gender': 'female'},
-    'Grandpa': {'age': 402, 'gender': 'male'},
-    'Eddie':   {'age': 10,  'gender': 'male'},
-    'Marilyn': {'age': 23,  'gender': 'female'},
-}
-# # # Loop
-# # result = 0
-# # for person in munsters:
-# #     if munsters[person]['gender'] == 'male':
-# #         result += munsters[person]['age']
-# # print(result)
+# munsters = {
+#     'Herman':  {'age': 32,  'gender': 'male'},
+#     'Lily':    {'age': 30,  'gender': 'female'},
+#     'Grandpa': {'age': 402, 'gender': 'male'},
+#     'Eddie':   {'age': 10,  'gender': 'male'},
+#     'Marilyn': {'age': 23,  'gender': 'female'},
+# }
+# # Ordinary loop
+# total_age = 0
+# for member in munsters:
+#     if munsters[member]['gender'] == 'male':
+#         total_age += munsters[member]['age']
+# print(total_age)    
 
 # # Comprehension
-# print(sum([munsters[person]['age'] for person in munsters if munsters[person]['gender'] == 'male']))
-# print(sum([person['age'] for person in munsters.values() if person['gender'] == 'male']))
+# total_age = sum([munsters[member]['age'] for member in munsters if munsters[member]['gender'] == 'male'])
+# print(total_age)
 
 """
 Practice Problem 2
@@ -40,17 +40,16 @@ Expected result
 [['a', 'b', 'c'], [-3, 2, 11], ['black', 'blue', 'green']]
 The string values should be sorted as strings, while the numeric values should be sorted as numbers.
 """
-lst = [['b', 'c', 'a'], [2, 11, -3], ['blue', 'black', 'green']]
-
-# # # Loop
-# # lst2 = []
-# # for el in lst:
-# #     lst2.append(sorted(el))
-# # print(lst2)    
+# lst = [['b', 'c', 'a'], [2, 11, -3], ['blue', 'black', 'green']]
+# # Ordinary loop
+# sorted_list = []
+# for sublist in lst:
+#     sorted_list.append(sorted(sublist))
+# print(sorted_list)
 
 # # Comprehension
-# lst2 = [sorted(el) for el in lst]
-# print(lst2)
+# sorted_list = [sorted(sublist) for sublist in lst]
+# print(sorted_list)
 
 """
 Practice Problem 3
@@ -60,16 +59,16 @@ lst = [['b', 'c', 'a'], [2, 11, -3], ['blue', 'black', 'green']]
 Expected result
 [['a', 'b', 'c'], [-3, 11, 2], ['black', 'blue', 'green']]
 """
-lst = [['b', 'c', 'a'], [2, 11, -3], ['blue', 'black', 'green']]
-# # # Loop
-# # lst2 = []
-# # for el in lst:
-# #     lst2.append(sorted(el, key=str))
-# # print(lst2)    
+# lst = [['b', 'c', 'a'], [2, 11, -3], ['blue', 'black', 'green']]
+# # Ordinary list
+# sorted_list = []
+# for sublist in lst:
+#     sorted_list.append(sorted(sublist, key=str))
+# print(sorted_list)    
 
 # # Comprehension
-# lst2 = [sorted(el, key=str) for el in lst]
-# print(lst2)
+# sorted_list = [sorted(sublist, key=str) for sublist in lst]
+# print(sorted_list)
 
 """
 Practice Problem 4
@@ -86,7 +85,7 @@ Expected result
 {
     'a': 1,
     'b': 'two',
-    'sea': {c: 3},
+    'sea': {'c': 3},
     'D': ['a', 'b', 'c']
 }
 """
@@ -96,9 +95,8 @@ Expected result
 #     ['sea', {'c': 3}],
 #     ['D', ['a', 'b', 'c']]
 # ]
-
-# dict1 = {key: value for key, value in lst}
-# print(dict1)
+# my_dict = {key: value for key, value in lst}
+# print(my_dict)
 
 """
 Practice Problem 5
@@ -112,22 +110,10 @@ Expected result
 Try to use a comprehension in your solution.
 """
 # lst = [[1, 6, 7], [1, 5, 3], [1, 8, 3]]
-# def odds_sum(lst):
-#     return sum([el for el in lst if el % 2 == 1])
-# new = [sorted(lst, key=odds_sum)]
-# print(new)
-
-"""
-Practice Problem 6
-Given the following data structure, return a new list identical in structure to the original but, with each number incremented by 1. Do not modify the original data structure. Use a comprehension.
-
-lst = [{'a': 1}, {'b': 2, 'c': 3}, {'d': 4, 'e': 5, 'f': 6}]
-Expected result
-[{'a': 2}, {'b': 3, 'c': 4}, {'d': 5, 'e': 6, 'f': 7}]
-"""
-# lst = [{'a': 1}, {'b': 2, 'c': 3}, {'d': 4, 'e': 5, 'f': 6}]
-# lst2 = [{key: value + 1 for key, value in dct.items()} for dct in lst]
-# print(lst2)
+# def odds_sum(num_list):
+#     return sum([num for num in num_list if num % 2 != 0])
+# sorted_list = sorted(lst, key=odds_sum)
+# print(sorted_list)
 
 """
 Practice Problem 7
@@ -141,8 +127,19 @@ Expected result
 Try to use a comprehension for this. However, we recommend first trying it without comprehensions.
 """
 # lst = [[2], [3, 5, 7, 12], [9], [11, 15, 18]]
-# new = [[num for num in sublist if num % 3 == 0] for sublist in lst]
-# print(new)
+# # # Ordinary loop
+# # new_list = []
+# # for sublist in lst:
+# #     new_sublist = []
+# #     for num in sublist:
+# #         if num % 3 == 0:
+# #             new_sublist.append(num)
+# #     new_list.append(new_sublist)  
+# # print(new_list)
+
+# # Comprehension          
+# new_list = [[el for el in sublist if el % 3 == 0] for sublist in lst]
+# print(new_list)
 
 """
 Practice Problem 8
@@ -175,32 +172,42 @@ The return value should look like this:
 Expected result
 [["Red", "Green"], "MEDIUM", ["Orange"], "LARGE"]
 """
-# dict1 = {
-#     'grape': {
-#         'type': 'fruit',
-#         'colors': ['red', 'green'],
-#         'size': 'small',
-#     },
-#     'carrot': {
-#         'type': 'vegetable',
-#         'colors': ['orange'],
-#         'size': 'medium',
-#     },
-#     'apricot': {
-#         'type': 'fruit',
-#         'colors': ['orange'],
-#         'size': 'medium',
-#     },
-#     'marrow': {
-#         'type': 'vegetable',
-#         'colors': ['green'],
-#         'size': 'large',
-#     },
-# }
-# lst = [[color.capitalize() for color in inner_dict['colors']]
-#                             if inner_dict['type'] == 'fruit'
-#                             else inner_dict['size'].upper()
-#                             for inner_dict in dict1.values()]
+dict1 = {
+    'grape': {
+        'type': 'fruit',
+        'colors': ['red', 'green'],
+        'size': 'small',
+    },
+    'carrot': {
+        'type': 'vegetable',
+        'colors': ['orange'],
+        'size': 'medium',
+    },
+    'apricot': {
+        'type': 'fruit',
+        'colors': ['orange'],
+        'size': 'medium',
+    },
+    'marrow': {
+        'type': 'vegetable',
+        'colors': ['green'],
+        'size': 'large',
+    },
+}
+# # Method 1
+# lst = [[color.capitalize() for color in dict1[el]['colors']]
+#                               if dict1[el]['type'] == 'fruit'
+#                               else dict1[el]['size'].upper()
+#                               for el in dict1]
+
+# # Method 2
+# def transformed(key):
+#     if dict1[key]['type'] == 'fruit':
+#         return [color.capitalize() for color in dict1[key]['colors']]
+#     else:
+#         return dict1[key]['size'].upper()
+    
+# lst = [transformed(key) for key in dict1]
 # print(lst)
 
 """
@@ -222,16 +229,24 @@ Expected result
 #     {'b': [2, 4, 6], 'c': [3, 6], 'd': [4]},
 #     {'e': [8], 'f': [6, 10]},
 # ]
-
-# def all_even(lst):
-#     for sublist in lst:
-#         for num in sublist:
+# # Method 1
+# def all_even(my_dict):
+#     for key in my_dict:
+#         for num in my_dict[key]:
 #             if num % 2 != 0:
 #                 return False
 #     return True
-        
-# evens = [num_dict for num_dict in lst if all_even(list(num_dict.values()))]
-# print(evens)
+
+# new_list = [el for el in lst if all_even(el)]
+# print(new_list)
+
+# # Method 2
+# def all_even(my_dict):
+#     return all([num % 2 == 0 for key in my_dict
+#                              for num in my_dict[key]])
+
+# new_list = [el for el in lst if all_even(el)]
+# print(new_list)
 
 """
 Practice Problem 10
@@ -243,19 +258,14 @@ Note that our description of UUIDs is a simplified description of how UUIDs are 
 
 Write a function that takes no arguments and returns a string that contains a UUID.
 """
-# from random import choice
-# def uuid():
+# def generate_uuid():
+#     from random import choice
 #     CHARS = '0123456789abcdef'
 #     pattern = [8, 4, 4, 4, 12]
-#     sections = []
-#     for num in pattern:
-#         section = ''
-#         for count in range(num):
-#             section += choice(CHARS)
-#         sections.append(section)
-
-#     return '-'.join(sections)  
-# print(uuid())
+#     chunks = [''.join([choice(CHARS) for _ in range(num)]) for num in pattern]
+#     uuid = '-'.join(chunks)
+#     return uuid
+# print(generate_uuid())
 
 """
 Practice Problem 11
@@ -272,29 +282,30 @@ dict1 = {
 
 print(list_of_vowels)
 # ['e', 'u', 'i', 'o', 'o', 'u', 'e', 'o', 'e', 'e', 'a', 'o']
+Start by trying to write this using nested loops.
+
+Extra Challenge: Once your nested loop code works, try to refactor the code so it uses a single list comprehension. (You can print the resulting list outside of the comprehension.)
 """
-VOWELS = 'aeiou'
-dict1 = {
-    'first':  ['the', 'quick'],
-    'second': ['brown', 'fox'],
-    'third':  ['jumped'],
-    'fourth': ['over', 'the', 'lazy', 'dog'],
-}
-# # Nested Loops
-# vowels = []
-# for lst in dict1.values():
-#     for word in lst:
-#         for char in word:
-#             if char in VOWELS:
-#                 vowels.append(char)
+# dict1 = {
+#     'first':  ['the', 'quick'],
+#     'second': ['brown', 'fox'],
+#     'third':  ['jumped'],
+#     'fourth': ['over', 'the', 'lazy', 'dog'],
+# }
 
-# print(vowels)
+# VOWELS = 'aeiou'
+# # # Loop
+# # list_of_vowels = []
+# # for key in dict1:
+# #     for word in dict1[key]:
+# #         for letter in word:
+# #             if letter in VOWELS:
+# #                 list_of_vowels.append(letter)
 
-# Comprehension
-vowels = [char for key in dict1
-               for word in dict1[key]
-               for char in word 
-               if char in VOWELS]
-print(vowels)
+# # Comrehension
+# list_of_vowels = [ letter for key in dict1
+#                           for word in dict1[key]
+#                           for letter in word
+#                           if letter in VOWELS ]
 
-
+# print(list_of_vowels)
