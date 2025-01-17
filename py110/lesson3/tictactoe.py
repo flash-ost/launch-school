@@ -10,6 +10,8 @@ WINNING_LINES = ['123', '456', '789', # rows
                  '147', '258', '369', # columns
                  '159', '357']        # diagonals
 
+WINS_LIMIT = 3
+
 def computer_chooses_square(board):
     if board_full(board):
         return
@@ -79,10 +81,9 @@ def winner(board):
             return 'Computer'
     return None  
 
-def host_game():
-    greet_player()
+def host_game(scoreboard, game_number):
+    ready(game_number)
     board = initialize_board()
-
     while True:
         display_board(board)
 
@@ -94,36 +95,66 @@ def host_game():
         if winner(board) or board_full(board):
             break
 
-    display_board(board) 
-    display_result(board)    
+    display_board(board)
+    record_result(board, scoreboard)
+    display_summary(scoreboard)
 
-def display_result(board):
+def display_summary(scoreboard):
+    prompt('CORRENT SCORE')
+    prompt(f'PLAYER {scoreboard['Player']} : {scoreboard['Computer']} COMPUTER')   
+
+def ready(game_number):
+    print()
+    prompt(f'Game {game_number} begins!')
+    prompt(f'Press ENTER when ready')
+    input()
+
+def host_match():
+    game_count = 1
+    scoreboard = {'Player': 0, 'Computer': 0}
+    while scoreboard['Player'] < WINS_LIMIT and scoreboard['Computer'] < WINS_LIMIT:
+        host_game(scoreboard, game_count)
+        game_count += 1
+    greet_match_winner(scoreboard)    
+
+def record_result(board, scoreboard):
     result = winner(board)
     if result:
         prompt(f'{result} won!')
+        scoreboard[result] += 1
     else:
         prompt('It\'s a tie!')
 
-def another_game():
-    prompt('Fancy another game? Y/N')
+def another_match():
+    print()
+    prompt('Fancy another match? Y/N')
     answer = input().strip().lower()
     while answer not in VALID_ANSWERS:
-        prompt('What-what? Type Y for "yes" or N for "no"')
+        prompt('Wut? Please type Y for "yes" or N for "no"')
         answer = input().strip().lower()
 
     return answer in VALID_ANSWERS[2:]
 
 def greet_player():
     prompt('Let\'s play Tic Tac Toe!')
-    prompt('Your marker is "X", computer\'s marker is O. Good luck!')
-    prompt('Ready? Y/N')
-    
-    answer = input().strip().lower()
-    while answer not in VALID_ANSWERS[2:]:
-        answer = input().strip().lower()
+    prompt('Your marker is "X", computer\'s marker is O.')
+    prompt('Match is played to 3 wins. Good luck!')
+
+def update_scoreboard(board, scoreboard):
+    result = winner(board)
+    if result:
+        scoreboard[winner] += 1
+
+def greet_match_winner(scoreboard):
+    if scoreboard['Player'] == 3:
+        prompt('You\'re a natural! Congratulations on winning the match!')
+    else:
+        prompt('We trained him well, huh? Better luck next time!')    
 
 while True:
-    host_game()
-    if not another_game():
+    system('clear')
+    greet_player()
+    host_match()
+    if not another_match():
         prompt('Thank you for playing!')
         break
