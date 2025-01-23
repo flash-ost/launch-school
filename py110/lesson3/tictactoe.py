@@ -1,12 +1,14 @@
 from os import system
 from random import choice
 
-FIRST_TO_MOVE = 'Choose'
+FIRST_TO_MOVE = 'Choose' # 'player' 'computer'
+VALID_FIRST_PLAYER = ['1', '2']
 INITIAL_MARKER = ' '
 HUMAN_MARKER = 'X'
 COMPUTER_MARKER = 'O'
 SQUARE_NUMBERS = '123456789'
 VALID_ANSWERS = ['no', 'n', 'yes', 'y']
+VALID_DIFFICULTY = ['1', '2', '3', '4']
 WINNING_LINES = ['123', '456', '789', # rows
                  '147', '258', '369', # columns
                  '159', '357']        # diagonals
@@ -26,13 +28,50 @@ def another_match():
 def board_full(board):
     return not determine_empty_squares(board)
 
-def computer_chooses_square(board):
+def choose_difficulty():
+    print()
+    prompt('***CHOOSE DIFFICULTY LEVEL***')
+    prompt('Easy: computer will be very lenient (enter 1)')
+    prompt('Medium: computer will try to stop you from winning (enter 2)')
+    prompt('Hard: computer will play aggresively (enter 3)')
+    prompt('Impossible: tie is the best you can hope for (enter 4)')
+
+    difficulty = input().strip()
+    while difficulty not in VALID_DIFFICULTY:
+        prompt('No such difficulty. Type one of the following numbers:')
+        prompt('1 for easy')
+        prompt('2 for medium')
+        prompt('3 for hard')
+        prompt('4 for impossible')
+        difficulty = input().strip()
+    return difficulty
+
+def choose_square(player, board, ai_difficulty):
+    return player_chooses_square(board) if player == 'Player' else computer_chooses_square(board, ai_difficulty)
+
+def computer_chooses_square(board, ai_difficulty):
     if board_full(board):
         return
     
-    ## Defense
-    # Handle threat of player winning in next move
-    # Try to win first. If no winning move, try not to let player win
+    match ai_difficulty:
+        case '1':
+            square = computer_easy(board)
+        case '2':
+            square = computer_medium(board)
+        case '3':
+            square = computer_hard(board)
+        case '4':
+            square = computer_impossible(board)
+
+    board[square] = COMPUTER_MARKER
+
+# Choose random empty square
+def computer_easy(board):
+    empty_squares = determine_empty_squares(board)
+    return choice(empty_squares)
+
+def computer_hard(board):
+    # Offense: try to win first. If no winning move, try not to let player win
     square = None
     markers = [COMPUTER_MARKER, HUMAN_MARKER]
     for marker in markers:
@@ -43,40 +82,41 @@ def computer_chooses_square(board):
                     square = line[markers_in_line.index(' ')]
                 except:
                     continue    
-        # # First two squares of line are marked by player
-        # if (board[line[0]] == HUMAN_MARKER 
-        #     and board[line[1]] == HUMAN_MARKER
-        #     and board[line[2]] == INITIAL_MARKER):
-        #         board[line[2]] = COMPUTER_MARKER
-        #         return
-
-        # # Squares 1 and 3 of line are marked by player
-        # elif (board[line[0]] == HUMAN_MARKER
-        #     and board[line[2]] == HUMAN_MARKER
-        #     and board[line[1]] == INITIAL_MARKER):
-        #         board[line[1]] = COMPUTER_MARKER
-        #         return
-     
-        # # Latter two squares of line are marked by player
-        # elif (board[line[1]] == HUMAN_MARKER
-        #     and board[line[2]] == HUMAN_MARKER
-        #     and board[line[0]] == INITIAL_MARKER):
-        #         board[line[0]] = COMPUTER_MARKER
-        #         return
 
     # Choose square 5 if it's available, else random square
     if not square:
         empty_squares = determine_empty_squares(board)
         square = '5' if '5' in empty_squares else choice(empty_squares)
-    
+    return square         
 
-    board[square] = COMPUTER_MARKER
-    return square
+def computer_impossible(board):
+    best_score = -float('inf')
+    best_square = None
+    for square in determine_empty_squares(board):
+        board[square] = COMPUTER_MARKER
+        score = minimax(board, False)
+        board[square] = INITIAL_MARKER
+        if score > best_score:
+            best_score = score
+            best_square = square
+    return best_square  
 
-    ## Random
-    # empty_squares = determine_empty_squares(board)
-    # computer_square = choice(empty_squares)
-    # board[computer_square] = COMPUTER_MARKER
+def computer_medium(board):
+    # Handle threat of player winning in next move
+    square = None
+    for line in WINNING_LINES:
+        markers_in_line = [board[square] for square in line]
+        if markers_in_line.count(HUMAN_MARKER) == 2:
+            try:
+                square = line[markers_in_line.index(' ')]
+            except:
+                continue    
+
+    # Choose random square if no immediate threat
+    if not square:
+        empty_squares = determine_empty_squares(board)
+        square =  choice(empty_squares)  
+    return square     
 
 def determine_empty_squares(board):
     return [key for key, value in board.items() if value == INITIAL_MARKER]
@@ -113,33 +153,38 @@ def greet_match_winner(scoreboard):
 
 def greet_player():
     prompt('Let\'s play Tic Tac Toe!')
-    prompt('Your marker is "X", computer\'s marker is O.')
+    prompt('Your marker is X, computer\'s marker is O.')
     prompt('Match is played to 3 wins. Good luck!')
 
-def host_game(scoreboard, game_number):
+def host_game(scoreboard, game_number, ai_difficulty):
+    if FIRST_TO_MOVE == 'Choose':
+        current_player = who_moves_first()
+    else:
+        current_player = FIRST_TO_MOVE
+
     ready(game_number)
     board = initialize_board()
     recent_squares = {'Player': None, 'Computer': None,}
     while True:
         display_board(board, recent_squares)
 
-        recent_squares['Player'] = player_chooses_square(board)
+        recent_squares[current_player] = choose_square(current_player, board, ai_difficulty)
         if winner(board) or board_full(board):
             break
-
-        recent_squares['Computer'] = computer_chooses_square(board)
-        if winner(board) or board_full(board):
-            break
+        
+        # Alternate player
+        current_player = 'Computer' if current_player == 'Player' else 'Player'
 
     display_board(board, recent_squares)
     record_result(board, scoreboard)
     display_summary(scoreboard)
 
 def host_match():
+    difficulty = choose_difficulty()
     game_count = 1
     scoreboard = {'Player': 0, 'Computer': 0}
     while scoreboard['Player'] < WINS_LIMIT and scoreboard['Computer'] < WINS_LIMIT:
-        host_game(scoreboard, game_count)
+        host_game(scoreboard, game_count, difficulty)
         game_count += 1
     greet_match_winner(scoreboard)       
 
@@ -203,6 +248,50 @@ def update_scoreboard(board, scoreboard):
     result = winner(board)
     if result:
         scoreboard[winner] += 1  
+
+# Let user choose who moves first
+def who_moves_first():
+    print()
+    prompt('***CHOOSE WHO MOVES FIRST***')
+    prompt('You: enter 1')
+    prompt('Computer: enter 2')
+    move_order = input().strip()
+    while move_order not in VALID_FIRST_PLAYER:
+        prompt('Please enter 1 if you want to move first, 2 if second.')
+        move_order = input().strip()
+
+    return 'Player' if move_order == '1' else 'Computer'    
+
+def minimax(board, maximizing=True):
+    # Base case 1: we have a winner
+    won = winner(board)
+    if won:
+        return 1 if won == 'Computer' else -1
+    # Base case 2: board is full
+    elif board_full(board):
+        return 0
+    
+    # Recursive case
+    if maximizing:
+        best_score = -float('inf')
+        for square in determine_empty_squares(board):
+            board[square] = COMPUTER_MARKER
+            score = minimax(board, False)
+            board[square] = INITIAL_MARKER
+            if score > best_score:
+                best_score = score
+    else:
+        best_score = float('inf')
+        for square in determine_empty_squares(board):
+            board[square] = HUMAN_MARKER
+            score = minimax(board)
+            board[square] = INITIAL_MARKER
+            if score < best_score:
+                best_score = score
+    return best_score            
+            
+
+
 
 while True:
     system('clear')
