@@ -269,6 +269,16 @@ def player_chooses_square(board):
     board[square] = HUMAN_MARKER
     return square
 
+# Main program
+def play_tictactoe():
+    while True:
+        system('clear')
+        greet_player()
+        host_match()
+        if not another_match():
+            prompt('Thank you for playing!')
+            break
+
 # Format messages
 def prompt(message):
     print(f'==> {message}')
@@ -311,11 +321,4 @@ def winner(board):
             return 'Computer'
     return None
 
-
-while True:
-    system('clear')
-    greet_player()
-    host_match()
-    if not another_match():
-        prompt('Thank you for playing!')
-        break
+play_tictactoe()
