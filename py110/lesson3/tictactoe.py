@@ -5,7 +5,7 @@ COMPUTER_MARKER = 'O'
 HUMAN_MARKER = 'X'
 INITIAL_MARKER = ' '
 
-FIRST_TO_MOVE = 'Choose' # 'player' 'computer'
+FIRST_TO_MOVE = 'Choose' # 'Player' 'Computer'
 SQUARE_NUMBERS = '123456789'
 VALID_ANSWERS = ['no', 'n', 'yes', 'y']
 VALID_DIFFICULTY = ['1', '2', '3', '4']
@@ -58,7 +58,7 @@ def choose_square(player, board, ai_difficulty):
 # Let computer choose square according to difficulty setting
 def computer_chooses_square(board, ai_difficulty):
     if board_full(board):
-        return
+        return None
 
     match ai_difficulty:
         case '1':
@@ -71,6 +71,7 @@ def computer_chooses_square(board, ai_difficulty):
             square = computer_impossible(board)
 
     board[square] = COMPUTER_MARKER
+    return square
 
 # Choose random empty square
 def computer_easy(board):
@@ -87,7 +88,7 @@ def computer_hard(board):
             if markers_in_line.count(marker) == 2:
                 try:
                     square = line[markers_in_line.index(' ')]
-                except:
+                except ValueError:
                     continue
 
     # Choose square 5 if it's available, else random square
@@ -117,7 +118,7 @@ def computer_medium(board):
         if markers_in_line.count(HUMAN_MARKER) == 2:
             try:
                 square = line[markers_in_line.index(' ')]
-            except:
+            except ValueError:
                 continue
 
     # Choose random square if no immediate threat
@@ -147,14 +148,16 @@ def display_board(board, recent_squares):
     print('     |     |')
     print()
 
+    # Announce most recent moves
     for player in recent_squares:
         if recent_squares[player]:
             prompt(f'{player} chose square {recent_squares[player]}.')
 
 # Display game summary
 def display_summary(scoreboard):
-    prompt('CORRENT SCORE')
-    prompt(f'PLAYER {scoreboard['Player']} : {scoreboard['Computer']} COMPUTER')
+    prompt('***CORRENT SCORE***')
+    prompt(f'PLAYER {scoreboard['Player']} : '
+           f'{scoreboard['Computer']} COMPUTER')
 
 def greet_match_winner(scoreboard):
     if scoreboard['Player'] == 3:
@@ -168,24 +171,30 @@ def greet_player():
     prompt('Match is played to 3 wins. Good luck!')
 
 def host_game(scoreboard, game_number, ai_difficulty):
+    # Set who moves first
     if FIRST_TO_MOVE == 'Choose':
         current_player = who_moves_first()
     else:
         current_player = FIRST_TO_MOVE
 
+    # Game preparation
     ready(game_number)
     board = initialize_board()
-    recent_squares = {'Player': None, 'Computer': None,}
-    while True:
-        display_board(board, recent_squares)
+    recent_squares = {'Player': None, 'Computer': None}
 
-        recent_squares[current_player] = choose_square(current_player, board, ai_difficulty)
+    # Game loop
+    while True:
+        if current_player == 'Player':
+            display_board(board, recent_squares)
+        recent_squares[current_player] = choose_square(current_player,
+                                                       board, ai_difficulty)
         if winner(board) or board_full(board):
             break
 
         # Alternate player
         current_player = 'Computer' if current_player == 'Player' else 'Player'
 
+    # After game ends
     display_board(board, recent_squares)
     record_result(board, scoreboard)
     display_summary(scoreboard)
@@ -194,7 +203,8 @@ def host_match():
     difficulty = choose_difficulty()
     game_count = 1
     scoreboard = {'Player': 0, 'Computer': 0}
-    while scoreboard['Player'] < WINS_LIMIT and scoreboard['Computer'] < WINS_LIMIT:
+    while (scoreboard['Player'] < WINS_LIMIT
+           and scoreboard['Computer'] < WINS_LIMIT):
         host_game(scoreboard, game_count, difficulty)
         game_count += 1
     greet_match_winner(scoreboard)
@@ -206,6 +216,7 @@ def initialize_board():
 def is_valid_square(square_num, empties):
     return square_num in empties
 
+# Proper formatting for available squares
 def join_or(sequence, delimiter=', ', join_word='or'):
     match len(sequence):
         case 0:
@@ -215,7 +226,8 @@ def join_or(sequence, delimiter=', ', join_word='or'):
         case 2:
             return f'{sequence[0]} {join_word} {sequence[1]}'
         case _:
-            return f'{delimiter.join(sequence[:-1])}{delimiter}{join_word} {sequence[-1]}'
+            return (f'{delimiter.join(sequence[:-1])}'
+                    f'{delimiter}{join_word} {sequence[-1]}')
 
 # Minimax algorithm for impossible difficulty
 def minimax(board, maximizing=True):
@@ -224,7 +236,7 @@ def minimax(board, maximizing=True):
     if won:
         return 1 if won == 'Computer' else -1
     # Base case 2: board is full
-    elif board_full(board):
+    if board_full(board):
         return 0
 
     # Recursive case
@@ -234,16 +246,14 @@ def minimax(board, maximizing=True):
             board[square] = COMPUTER_MARKER
             score = minimax(board, False)
             board[square] = INITIAL_MARKER
-            if score > best_score:
-                best_score = score
+            best_score = max(score, best_score)
     else:
         best_score = float('inf')
         for square in determine_empty_squares(board):
             board[square] = HUMAN_MARKER
             score = minimax(board)
             board[square] = INITIAL_MARKER
-            if score < best_score:
-                best_score = score
+            best_score = min(score, best_score)
     return best_score
 
 # Let player choose a square
@@ -297,7 +307,7 @@ def winner(board):
         line_markers = set([board[line[0]], board[line[1]], board[line[2]]])
         if line_markers == set(HUMAN_MARKER):
             return 'Player'
-        elif line_markers == set(COMPUTER_MARKER):
+        if line_markers == set(COMPUTER_MARKER):
             return 'Computer'
     return None
 
