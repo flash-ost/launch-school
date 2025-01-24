@@ -1,20 +1,21 @@
 from os import system
 from random import choice
 
-FIRST_TO_MOVE = 'Choose' # 'player' 'computer'
-VALID_FIRST_PLAYER = ['1', '2']
-INITIAL_MARKER = ' '
-HUMAN_MARKER = 'X'
 COMPUTER_MARKER = 'O'
+HUMAN_MARKER = 'X'
+INITIAL_MARKER = ' '
+
+FIRST_TO_MOVE = 'Choose' # 'player' 'computer'
 SQUARE_NUMBERS = '123456789'
 VALID_ANSWERS = ['no', 'n', 'yes', 'y']
 VALID_DIFFICULTY = ['1', '2', '3', '4']
+VALID_FIRST_PLAYER = ['1', '2']
 WINNING_LINES = ['123', '456', '789', # rows
                  '147', '258', '369', # columns
                  '159', '357']        # diagonals
-
 WINS_LIMIT = 3
 
+# Ask if user wants to play another match
 def another_match():
     print()
     prompt('Fancy another match? Y/N')
@@ -25,20 +26,22 @@ def another_match():
 
     return answer in VALID_ANSWERS[2:]
 
+# Check if board is full
 def board_full(board):
     return not determine_empty_squares(board)
 
+# Let user choose ai difficulty
 def choose_difficulty():
     print()
     prompt('***CHOOSE DIFFICULTY LEVEL***')
     prompt('Easy: computer will be very lenient (enter 1)')
     prompt('Medium: computer will try to stop you from winning (enter 2)')
     prompt('Hard: computer will play aggresively (enter 3)')
-    prompt('Impossible: tie is the best you can hope for (enter 4)')
+    prompt('Impossible: you will beg for a tie (enter 4)')
 
     difficulty = input().strip()
     while difficulty not in VALID_DIFFICULTY:
-        prompt('No such difficulty. Type one of the following numbers:')
+        prompt('No such difficulty. Enter one of the following numbers:')
         prompt('1 for easy')
         prompt('2 for medium')
         prompt('3 for hard')
@@ -46,13 +49,17 @@ def choose_difficulty():
         difficulty = input().strip()
     return difficulty
 
+# Let user/computer choose square
 def choose_square(player, board, ai_difficulty):
-    return player_chooses_square(board) if player == 'Player' else computer_chooses_square(board, ai_difficulty)
+    if player == 'Player':
+        return player_chooses_square(board)
+    return computer_chooses_square(board, ai_difficulty)
 
+# Let computer choose square according to difficulty setting
 def computer_chooses_square(board, ai_difficulty):
     if board_full(board):
         return
-    
+
     match ai_difficulty:
         case '1':
             square = computer_easy(board)
@@ -70,8 +77,8 @@ def computer_easy(board):
     empty_squares = determine_empty_squares(board)
     return choice(empty_squares)
 
+# Offense: try to win first. If no winning move, try not to let player win
 def computer_hard(board):
-    # Offense: try to win first. If no winning move, try not to let player win
     square = None
     markers = [COMPUTER_MARKER, HUMAN_MARKER]
     for marker in markers:
@@ -81,14 +88,15 @@ def computer_hard(board):
                 try:
                     square = line[markers_in_line.index(' ')]
                 except:
-                    continue    
+                    continue
 
     # Choose square 5 if it's available, else random square
     if not square:
         empty_squares = determine_empty_squares(board)
         square = '5' if '5' in empty_squares else choice(empty_squares)
-    return square         
+    return square
 
+# Choose best square utilizing minimax algorithm
 def computer_impossible(board):
     best_score = -float('inf')
     best_square = None
@@ -99,10 +107,10 @@ def computer_impossible(board):
         if score > best_score:
             best_score = score
             best_square = square
-    return best_square  
+    return best_square
 
+# Handle threat of player winning in next move
 def computer_medium(board):
-    # Handle threat of player winning in next move
     square = None
     for line in WINNING_LINES:
         markers_in_line = [board[square] for square in line]
@@ -110,17 +118,19 @@ def computer_medium(board):
             try:
                 square = line[markers_in_line.index(' ')]
             except:
-                continue    
+                continue
 
     # Choose random square if no immediate threat
     if not square:
         empty_squares = determine_empty_squares(board)
-        square =  choice(empty_squares)  
-    return square     
+        square = choice(empty_squares)
+    return square
 
+# Return a list of empty squares
 def determine_empty_squares(board):
     return [key for key, value in board.items() if value == INITIAL_MARKER]
 
+# Display current state of the board
 def display_board(board, recent_squares):
     system('clear')
     print()
@@ -141,6 +151,7 @@ def display_board(board, recent_squares):
         if recent_squares[player]:
             prompt(f'{player} chose square {recent_squares[player]}.')
 
+# Display game summary
 def display_summary(scoreboard):
     prompt('CORRENT SCORE')
     prompt(f'PLAYER {scoreboard['Player']} : {scoreboard['Computer']} COMPUTER')
@@ -171,7 +182,7 @@ def host_game(scoreboard, game_number, ai_difficulty):
         recent_squares[current_player] = choose_square(current_player, board, ai_difficulty)
         if winner(board) or board_full(board):
             break
-        
+
         # Alternate player
         current_player = 'Computer' if current_player == 'Player' else 'Player'
 
@@ -186,7 +197,7 @@ def host_match():
     while scoreboard['Player'] < WINS_LIMIT and scoreboard['Computer'] < WINS_LIMIT:
         host_game(scoreboard, game_count, difficulty)
         game_count += 1
-    greet_match_winner(scoreboard)       
+    greet_match_winner(scoreboard)
 
 def initialize_board():
     return {key: INITIAL_MARKER for key in SQUARE_NUMBERS}
@@ -206,62 +217,7 @@ def join_or(sequence, delimiter=', ', join_word='or'):
         case _:
             return f'{delimiter.join(sequence[:-1])}{delimiter}{join_word} {sequence[-1]}'
 
-def player_chooses_square(board):
-    # Determine what squares are empty
-    empty_squares = determine_empty_squares(board)
-    while True:
-        prompt(f'Choose a square ({join_or(empty_squares)}):')
-        square = input().strip()
-        if is_valid_square(square, empty_squares):
-            break
-        prompt('Sorry, that\'s not a valid square.')
-    board[square] = HUMAN_MARKER
-    return square
-
-def prompt(message):
-    print(f'==> {message}')
-
-def ready(game_number):
-    print()
-    prompt(f'Game {game_number} begins!')
-    prompt(f'Press ENTER when ready')
-    input()
-
-def record_result(board, scoreboard):
-    result = winner(board)
-    if result:
-        prompt(f'{result} won!')
-        scoreboard[result] += 1
-    else:
-        prompt('It\'s a tie!')    
-
-def winner(board):
-    for line in WINNING_LINES:
-        line_markers = set([board[line[0]], board[line[1]], board[line[2]]])
-        if line_markers == set(HUMAN_MARKER):
-            return 'Player'
-        elif line_markers == set(COMPUTER_MARKER):
-            return 'Computer'
-    return None
-
-def update_scoreboard(board, scoreboard):
-    result = winner(board)
-    if result:
-        scoreboard[winner] += 1  
-
-# Let user choose who moves first
-def who_moves_first():
-    print()
-    prompt('***CHOOSE WHO MOVES FIRST***')
-    prompt('You: enter 1')
-    prompt('Computer: enter 2')
-    move_order = input().strip()
-    while move_order not in VALID_FIRST_PLAYER:
-        prompt('Please enter 1 if you want to move first, 2 if second.')
-        move_order = input().strip()
-
-    return 'Player' if move_order == '1' else 'Computer'    
-
+# Minimax algorithm for impossible difficulty
 def minimax(board, maximizing=True):
     # Base case 1: we have a winner
     won = winner(board)
@@ -270,7 +226,7 @@ def minimax(board, maximizing=True):
     # Base case 2: board is full
     elif board_full(board):
         return 0
-    
+
     # Recursive case
     if maximizing:
         best_score = -float('inf')
@@ -288,9 +244,62 @@ def minimax(board, maximizing=True):
             board[square] = INITIAL_MARKER
             if score < best_score:
                 best_score = score
-    return best_score            
-            
+    return best_score
 
+# Let player choose a square
+def player_chooses_square(board):
+    # Determine what squares are empty
+    empty_squares = determine_empty_squares(board)
+    while True:
+        prompt(f'Choose a square ({join_or(empty_squares)}):')
+        square = input().strip()
+        if is_valid_square(square, empty_squares):
+            break
+        prompt('Sorry, that\'s not a valid square.')
+    board[square] = HUMAN_MARKER
+    return square
+
+# Format messages
+def prompt(message):
+    print(f'==> {message}')
+
+# Announce game number and ensure player is ready
+def ready(game_number):
+    print()
+    prompt(f'Game {game_number} begins!')
+    prompt('Press ENTER when ready')
+    input()
+
+# Update scoreboard after game
+def record_result(board, scoreboard):
+    result = winner(board)
+    if result:
+        prompt(f'{result} won!')
+        scoreboard[result] += 1
+    else:
+        prompt('It\'s a tie!')
+
+# Let user choose who makes first move
+def who_moves_first():
+    print()
+    prompt('***CHOOSE WHO MOVES FIRST***')
+    prompt('You: enter 1')
+    prompt('Computer: enter 2')
+    move_order = input().strip()
+    while move_order not in VALID_FIRST_PLAYER:
+        prompt('Please enter 1 if you want to move first, 2 if second.')
+        move_order = input().strip()
+    return 'Player' if move_order == '1' else 'Computer'
+
+# Determine if there is a winner
+def winner(board):
+    for line in WINNING_LINES:
+        line_markers = set([board[line[0]], board[line[1]], board[line[2]]])
+        if line_markers == set(HUMAN_MARKER):
+            return 'Player'
+        elif line_markers == set(COMPUTER_MARKER):
+            return 'Computer'
+    return None
 
 
 while True:
