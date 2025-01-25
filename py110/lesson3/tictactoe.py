@@ -7,7 +7,7 @@ INITIAL_MARKER = ' '
 
 FIRST_TO_MOVE = 'Choose' # 'Player' 'Computer'
 SQUARE_NUMBERS = '123456789'
-TOO_MANY_GAMES = 3
+TOO_MANY_GAMES = 11
 VALID_ANSWERS = ['no', 'n', 'yes', 'y']
 VALID_DIFFICULTY = ['1', '2', '3', '4']
 VALID_FIRST_PLAYER = ['1', '2']
@@ -166,9 +166,15 @@ def display_board(board):
 
 # Display game summary
 def display_summary(scoreboard):
+    print()
     prompt('***CORRENT SCORE***')
     prompt(f'PLAYER {scoreboard['Player']} : '
            f'{scoreboard['Computer']} COMPUTER')
+
+def explain_basics():
+    print()
+    prompt('Your marker is X, computer\'s marker is O.')
+    prompt('Match is played to 3 wins. Good luck!')
 
 def greet_match_winner(scoreboard):
     if scoreboard['Player'] == 3:
@@ -178,8 +184,6 @@ def greet_match_winner(scoreboard):
 
 def greet_player():
     prompt('Let\'s play Tic Tac Toe!')
-    prompt('Your marker is X, computer\'s marker is O.')
-    prompt('Match is played to 3 wins. Good luck!')
 
 def host_game(scoreboard, game_number, ai_difficulty):
     # Set who moves first
@@ -214,6 +218,7 @@ def host_game(scoreboard, game_number, ai_difficulty):
 
 def host_match():
     difficulty = choose_difficulty()
+    explain_basics()
     game_count = 1
     scoreboard = {'Player': 0, 'Computer': 0}
     while (scoreboard['Player'] < WINS_LIMIT
