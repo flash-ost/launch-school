@@ -256,7 +256,7 @@ def join_or(sequence, delimiter=', ', join_word='or'):
                     f'{delimiter}{join_word} {sequence[-1]}')
 
 # Minimax algorithm for impossible difficulty
-def minimax(board, maximizing=True):
+def minimax(board, maximizing):
     # Base case 1: we have a winner
     won = winner(board)
     if won:
@@ -277,7 +277,7 @@ def minimax(board, maximizing=True):
         best_score = float('inf')
         for square in determine_empty_squares(board):
             board[square] = HUMAN_MARKER
-            score = minimax(board)
+            score = minimax(board, True)
             board[square] = INITIAL_MARKER
             best_score = min(score, best_score)
     return best_score
