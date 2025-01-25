@@ -7,6 +7,7 @@ INITIAL_MARKER = ' '
 
 FIRST_TO_MOVE = 'Choose' # 'Player' 'Computer'
 SQUARE_NUMBERS = '123456789'
+TOO_MANY_GAMES = 3
 VALID_ANSWERS = ['no', 'n', 'yes', 'y']
 VALID_DIFFICULTY = ['1', '2', '3', '4']
 VALID_FIRST_PLAYER = ['1', '2']
@@ -15,13 +16,18 @@ WINNING_LINES = ['123', '456', '789', # rows
                  '159', '357']        # diagonals
 WINS_LIMIT = 3
 
+def announce_recent_moves(moves):
+    for player in moves:
+        if moves[player]:
+            prompt(f'{player} chose square {moves[player]}.')
+
 # Ask if user wants to play another match
 def another_match():
     print()
     prompt('Fancy another match? Y/N')
     answer = input().strip().lower()
     while answer not in VALID_ANSWERS:
-        prompt('Wut? Please type Y for "yes" or N for "no"')
+        prompt('Please enter Y for "yes" or N for "no"')
         answer = input().strip().lower()
 
     return answer in VALID_ANSWERS[2:]
@@ -29,6 +35,16 @@ def another_match():
 # Check if board is full
 def board_full(board):
     return not determine_empty_squares(board)
+
+# Let user change AI difficulty
+def change_difficulty():
+    print()
+    prompt('Tough, right? How about lowering the difficulty? Y/N')
+    answer = input().strip()
+    while answer not in VALID_ANSWERS:
+        prompt('Please type Y for "yes" or N for "no"')
+        answer = input().strip().lower()
+    return answer in VALID_ANSWERS[2:]
 
 # Let user choose ai difficulty
 def choose_difficulty():
@@ -110,7 +126,7 @@ def computer_impossible(board):
             best_square = square
     return best_square
 
-# Handle threat of player winning in next move
+# Defense: handle threat of player winning in next move
 def computer_medium(board):
     square = None
     for line in WINNING_LINES:
@@ -132,7 +148,7 @@ def determine_empty_squares(board):
     return [key for key, value in board.items() if value == INITIAL_MARKER]
 
 # Display current state of the board
-def display_board(board, recent_squares):
+def display_board(board):
     system('clear')
     print()
     print('     |     |')
@@ -147,11 +163,6 @@ def display_board(board, recent_squares):
     print(f'  {board['7']}  |  {board['8']}  |  {board['9']}')
     print('     |     |')
     print()
-
-    # Announce most recent moves
-    for player in recent_squares:
-        if recent_squares[player]:
-            prompt(f'{player} chose square {recent_squares[player]}.')
 
 # Display game summary
 def display_summary(scoreboard):
@@ -185,7 +196,8 @@ def host_game(scoreboard, game_number, ai_difficulty):
     # Game loop
     while True:
         if current_player == 'Player':
-            display_board(board, recent_squares)
+            display_board(board)
+            announce_recent_moves(recent_squares)
         recent_squares[current_player] = choose_square(current_player,
                                                        board, ai_difficulty)
         if winner(board) or board_full(board):
@@ -195,7 +207,8 @@ def host_game(scoreboard, game_number, ai_difficulty):
         current_player = 'Computer' if current_player == 'Player' else 'Player'
 
     # After game ends
-    display_board(board, recent_squares)
+    display_board(board)
+    announce_recent_moves(recent_squares)
     record_result(board, scoreboard)
     display_summary(scoreboard)
 
@@ -205,6 +218,14 @@ def host_match():
     scoreboard = {'Player': 0, 'Computer': 0}
     while (scoreboard['Player'] < WINS_LIMIT
            and scoreboard['Computer'] < WINS_LIMIT):
+        # Propose to lower difficulty after lots of ties on impossible
+        if game_count == TOO_MANY_GAMES and difficulty == '4':
+            if change_difficulty():
+                prompt('Sure, let\'s start anew!')
+                host_match()
+            else:
+                prompt('No problem, you seem to like it. =)')
+
         host_game(scoreboard, game_count, difficulty)
         game_count += 1
     greet_match_winner(scoreboard)
