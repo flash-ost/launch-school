@@ -7,7 +7,7 @@ INITIAL_MARKER = ' '
 
 FIRST_TO_MOVE = 'Choose' # 'Player' 'Computer'
 SQUARE_NUMBERS = '123456789'
-TOO_MANY_GAMES = 11
+TOO_MANY_GAMES = 2
 VALID_ANSWERS = ['no', 'n', 'yes', 'y']
 VALID_DIFFICULTY = ['1', '2', '3', '4']
 VALID_FIRST_PLAYER = ['1', '2']
@@ -40,7 +40,7 @@ def board_full(board):
 def change_difficulty():
     print()
     prompt('Tough, right? How about lowering the difficulty? Y/N')
-    answer = input().strip()
+    answer = input().strip().lower()
     while answer not in VALID_ANSWERS:
         prompt('Please type Y for "yes" or N for "no"')
         answer = input().strip().lower()
