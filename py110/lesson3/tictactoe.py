@@ -7,7 +7,7 @@ INITIAL_MARKER = ' '
 
 FIRST_TO_MOVE = 'Choose' # 'Player' 'Computer'
 SQUARE_NUMBERS = '123456789'
-TOO_MANY_GAMES = 2
+TOO_MANY_GAMES = 11
 VALID_ANSWERS = ['no', 'n', 'yes', 'y']
 VALID_DIFFICULTY = ['1', '2', '3', '4']
 VALID_FIRST_PLAYER = ['1', '2']
