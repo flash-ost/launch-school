@@ -201,8 +201,7 @@ def computer_medium(board):
 
 # Offense: try to win first. If no winning move, try not to let player win
 def computer_hard(board):
-    markers = [COMPUTER_MARKER, HUMAN_MARKER]
-    for marker in markers:
+    for marker in [COMPUTER_MARKER, HUMAN_MARKER]:
         square = crucial_third(board, marker)
         if square:
             break
