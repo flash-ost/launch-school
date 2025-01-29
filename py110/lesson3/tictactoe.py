@@ -338,7 +338,6 @@ def another_match():
     while answer not in VALID_ANSWERS:
         prompt('Please enter Y for "yes" or N for "no"')
         answer = input().strip().lower()
-
     return answer in VALID_ANSWERS[2:]
 
 # Main program
