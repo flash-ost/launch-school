@@ -75,16 +75,7 @@ def total(hands, player):
         value_sum -= 10
         aces -= 1
 
-    return value_sum
-
-def dealer_turn(hands, deck):
-    while True:
-        total_value = total(hands, 'Dealer')
-        if busted(total_value):
-            return True, total_value
-        if total_value >= HIT_CAP:
-            return False, total_value
-        hands['Dealer'].append(deck.pop())         
+    return value_sum       
 
 def player_turn(hands, deck):
     while True:
@@ -103,6 +94,46 @@ def player_turn(hands, deck):
             hands['Player'].append(deck.pop())
         else:
             return False, total_value
+        
+def dealer_turn(hands, deck):
+    while True:
+        total_value = total(hands, 'Dealer')
+        if busted(total_value):
+            return True, total_value
+        if total_value >= HIT_CAP:
+            return False, total_value
+        hands['Dealer'].append(deck.pop())  
+
+def determine_winner(deck, hands, scoreboard):
+    player_busted, player_total = player_turn(hands, deck)
+    # Player busted, dealer doesn't play his hand
+    if player_busted:
+        display_cards(hands, True)
+        prompt(f'Your hand value is {player_total}')
+        prompt('You busted, dealer wins!')
+        scoreboard['Dealer'] += 1
+    else:
+        # Announce both hands
+        dealer_busted, dealer_total = dealer_turn(hands, deck)
+        display_cards(hands, True)
+        prompt(f'Your hand value is {player_total}')
+        prompt(f'Dealer\'s hand value is {dealer_total}')
+
+        # Dealer busted
+        if dealer_busted:
+            prompt('Dealer busted, you win!')
+            scoreboard['Player'] += 1
+        # Player has higher hand
+        elif player_total > dealer_total:
+            prompt('Your hand is higher, you win!')
+            scoreboard['Player'] += 1
+        # Dealer has higher hand
+        elif player_total < dealer_total:
+            prompt('Dealer\'s hand is higher, you lose!')
+            scoreboard['Dealer'] += 1
+        # Tie
+        else:    
+            prompt('It\'s a tie!')
 
 def display_scores(scoreboard):
     print()
@@ -114,42 +145,12 @@ def host_round():
     round_count = 1
     scoreboard = {'Player': 0, 'Dealer': 0}
     while True:
-        deck = generate_deck()
         ready(round_count)
+        deck = generate_deck()
         hands = { 'Dealer': [deck.pop(), deck.pop()],
                   'Player': [deck.pop(), deck.pop()] }
         
-        player_busted, player_total = player_turn(hands, deck)
-
-        # Player busted, dealer doesn't play his hand
-        if player_busted:
-            display_cards(hands, True)
-            prompt(f'Your hand value is {player_total}')
-            prompt('You busted, dealer wins!')
-            scoreboard['Dealer'] += 1
-        else:
-            # Announce both hands
-            dealer_busted, dealer_total = dealer_turn(hands, deck)
-            display_cards(hands, True)
-            prompt(f'Your hand value is {player_total}')
-            prompt(f'Dealer\'s hand value is {dealer_total}')
-
-            # Dealer busted
-            if dealer_busted:
-                prompt('Dealer busted, you win!')
-                scoreboard['Player'] += 1
-            # Player won by higher hand
-            elif player_total > dealer_total:
-                prompt('Your hand is higher, you win!')
-                scoreboard['Player'] += 1
-            # Dealer won by higher hand
-            elif player_total < dealer_total:
-                prompt('Dealer\'s hand is higher, you lose!')
-                scoreboard['Dealer'] += 1
-            # Tie
-            else:    
-                prompt('It\'s a tie!')
-
+        determine_winner(deck, hands, scoreboard)
         display_scores(scoreboard)
         round_count += 1
         if MAX_WINS in {scoreboard['Dealer'], scoreboard['Player']}:
