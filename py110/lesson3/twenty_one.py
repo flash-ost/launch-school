@@ -1,4 +1,4 @@
-from random import choice, shuffle
+from random import shuffle
 from os import system
 
 HIT_CAP = 17
@@ -10,87 +10,57 @@ VALID_MOVES = ('h', 'hit', 's', 'stay')
 VALUES = ('2', '3', '4', '5', '6', '7', '8', '9', '10',
           'J', 'Q', 'K', 'A')
 
-
-
-def busted(hands, player):
-    return total(hands, player) > MAX_HAND
-
-def dealer_move(hands, deck):
-    while True:
-        if busted(hands, 'Dealer'):
-            return 'Busted'
-        elif total(hands, 'Dealer') >= HIT_CAP:
-            return 'Stay'
-        else:
-            hands['Dealer'].append(deck.pop())
-
-def display_cards(hands, final_display):
-    system('clear')
-    for player in hands:
-        rows = ['', '', '', '', '']
-        print(f'***{player.upper()}\'S HAND***')
-        hand = hands[player]
-        if player == 'Dealer' and not final_display:
-            hand = [hands[player][0], '??']
-        for card in hand:
-            suit = card[0]
-            value1 = card[1:] if card[1:] == '10' else f'{card[1:]} '
-            value2 = card[1:] if card[1:] == '10' else f' {card[1:]}'
-            rows[0] += '+-----+  '
-            rows[1] += f'|{value1}   |  '
-            rows[2] += f'|  {suit}  |  '
-            rows[3] += f'|   {value2}|  '
-            rows[4] += '+-----+  '
-
-        for row in rows:
-            print(row)
-
-def display_summary(scoreboard):
-    print()
-    prompt('***CURRENT SCORE***')
-    prompt(f'PLAYER {scoreboard['Player']} : '
-           f'{scoreboard['Dealer']} DEALER')    
-
-def generate_deck():
-    deck = [suit + value for suit in SUITS for value in VALUES]
-    shuffle(deck)
-    return deck
-
-def greet_player():
-    system('clear')
-    prompt('Let\'s play twenty-one!')
-    prompt(f'Whoever wins {MAX_WINS} rounds first wins the game. Good luck!')
-
-def player_move(hands, deck):
-    while True:
-        display_cards(hands, False)
-        prompt(f'Do you want to hit or stay? H/S')
-        move = input().strip().lower()
-        while move not in VALID_MOVES:
-            prompt('Please enter H for hit or S for stay:')
-            move = input().strip().lower()
-
-        if move in VALID_MOVES[:2]:
-            hands['Player'].append(deck.pop())
-            if busted(hands, 'Player'):
-                return 'Busted'
-        else:
-            return 'Stay'
-
 # Format message
 def prompt(message):
     print(f'==> {message}')
+
+def greet_player():
+    system('clear')
+    prompt('Let\'s play Twenty-One!')
+    prompt('Game format is best of 5. Good luck!')
 
 def ready(round_number):
     print()
     prompt(f'Round {round_number} begins!')
     prompt('Press ENTER when ready')
-    input()    
+    input()
 
+def generate_deck():
+    deck = [suit + value for suit in SUITS for value in VALUES]
+    shuffle(deck)
+    return deck         
+
+# Check if player busted
+def busted(total_value):
+    return total_value > MAX_HAND
+
+def display_cards(hands, final_display):
+    system('clear')
+    for player in hands:
+        rows = ['', '', '', '', '']
+        print(f'{player.upper()}\'S HAND')
+        hand = hands[player]
+
+        # If not final display, second dealer's card should be face down
+        if player == 'Dealer' and not final_display:
+            hand = [hands[player][0], '??']
+        for card in hand:
+            suit = card[0]
+            value_top = card[1:] if card[1:] == '10' else f'{card[1:]} '
+            value_bottom = card[1:] if card[1:] == '10' else f' {card[1:]}'
+            rows[0] += '+-----+  '
+            rows[1] += f'|{value_top}   |  '
+            rows[2] += f'|  {suit}  |  '
+            rows[3] += f'|   {value_bottom}|  '
+            rows[4] += '+-----+  '
+
+        for row in rows:
+            print(row)
+
+# Calculate total value of player's cards
 def total(hands, player):
     values = [card[1:] for card in hands[player]]
     value_sum = 0
-
 
     for value in values:
         if value == 'A':
@@ -105,50 +75,110 @@ def total(hands, player):
         value_sum -= 10
         aces -= 1
 
-    return value_sum    
+    return value_sum
 
-greet_player()
-round_count = 1
-scoreboard = {'Player': 0, 'Dealer': 0}
-while True:
-    deck = generate_deck()
-    ready(round_count)
-    hands = { 'Dealer': [deck.pop(), deck.pop()],
-              'Player': [deck.pop(), deck.pop()] }
-    
-    player_decision = player_move(hands, deck)
-    if player_decision == 'Busted':
+def dealer_turn(hands, deck):
+    while True:
+        total_value = total(hands, 'Dealer')
+        if busted(total_value):
+            return True, total_value
+        if total_value >= HIT_CAP:
+            return False, total_value
+        hands['Dealer'].append(deck.pop())         
+
+def player_turn(hands, deck):
+    while True:
+        total_value = total(hands, 'Player')
+        if busted(total_value):
+            return True, total_value
+        
         display_cards(hands, False)
-        prompt(f'Your hand value is {total(hands, 'Player')}')
-        prompt('You busted, dealer wins!')
-        scoreboard['Dealer'] += 1
-    else:
-    
-        dealer_decision = dealer_move(hands, deck)
+        prompt('Do you want to hit or stay? H/S')
+        move = input().strip().lower()
+        while move not in VALID_MOVES:
+            prompt('Please enter H for hit or S for stay:')
+            move = input().strip().lower()
 
-        display_cards(hands, True)
-        prompt(f'Your hand value is {total(hands, 'Player')}')
-        prompt(f'Dealer\'s hand value is {total(hands, 'Dealer')}')
-
-        if dealer_decision == 'Busted':
-            prompt('Dealer busted, you win!')
-            scoreboard['Player'] += 1
+        if move in VALID_MOVES[:2]:
+            hands['Player'].append(deck.pop())
         else:
-            # Player won
-            if total(hands, 'Player') > total(hands, 'Dealer'):
-                prompt('You hand is higher, you win!')
-                scoreboard['Player'] += 1
+            return False, total_value
 
-            # Computer won
-            elif total(hands, 'Player') < total(hands, 'Dealer'):
+def display_scores(scoreboard):
+    print()
+    prompt('***CURRENT SCORE***')
+    prompt(f'PLAYER {scoreboard['Player']} : '
+           f'{scoreboard['Dealer']} DEALER')  
+
+def host_round():
+    round_count = 1
+    scoreboard = {'Player': 0, 'Dealer': 0}
+    while True:
+        deck = generate_deck()
+        ready(round_count)
+        hands = { 'Dealer': [deck.pop(), deck.pop()],
+                  'Player': [deck.pop(), deck.pop()] }
+        
+        player_busted, player_total = player_turn(hands, deck)
+
+        # Player busted, dealer doesn't play his hand
+        if player_busted:
+            display_cards(hands, True)
+            prompt(f'Your hand value is {player_total}')
+            prompt('You busted, dealer wins!')
+            scoreboard['Dealer'] += 1
+        else:
+            # Announce both hands
+            dealer_busted, dealer_total = dealer_turn(hands, deck)
+            display_cards(hands, True)
+            prompt(f'Your hand value is {player_total}')
+            prompt(f'Dealer\'s hand value is {dealer_total}')
+
+            # Dealer busted
+            if dealer_busted:
+                prompt('Dealer busted, you win!')
+                scoreboard['Player'] += 1
+            # Player won by higher hand
+            elif player_total > dealer_total:
+                prompt('Your hand is higher, you win!')
+                scoreboard['Player'] += 1
+            # Dealer won by higher hand
+            elif player_total < dealer_total:
                 prompt('Dealer\'s hand is higher, you lose!')
                 scoreboard['Dealer'] += 1
-
             # Tie
             else:    
                 prompt('It\'s a tie!')
 
-    display_summary(scoreboard)
-    round_count += 1
-    if scoreboard['Dealer'] == MAX_WINS or scoreboard['Player'] == MAX_WINS:
-        break
+        display_scores(scoreboard)
+        round_count += 1
+        if MAX_WINS in {scoreboard['Dealer'], scoreboard['Player']}:
+            announce_game_winner(scoreboard)
+            break
+
+def announce_game_winner(scoreboard):
+    if scoreboard['Player'] == MAX_WINS:
+        prompt('You won the game, congratulations! You are quite a card player.')
+    else:
+        prompt('Dealer beat you! Better luck next time.')  
+
+# Ask if user wants to play another game
+def another_game():
+    print()
+    prompt('Fancy another game? Y/N')
+    answer = input().strip().lower()
+    while answer not in VALID_ANSWERS:
+        prompt('Please enter Y for "yes" or N for "no"')
+        answer = input().strip().lower()
+    return answer in VALID_ANSWERS[2:]
+
+# Main program
+def play_twenty_one():
+    greet_player()
+    while True:
+        host_round()
+        if not another_game():
+            prompt('Thank you for playing!')
+            break
+
+play_twenty_one()        
