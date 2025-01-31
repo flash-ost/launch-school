@@ -28,7 +28,7 @@ def ready(round_number):
 def generate_deck():
     deck = [suit + value for suit in SUITS for value in VALUES]
     shuffle(deck)
-    return deck         
+    return deck
 
 # Check if player busted
 def busted(total_value):
@@ -75,14 +75,14 @@ def total(hands, player):
         value_sum -= 10
         aces -= 1
 
-    return value_sum       
+    return value_sum
 
 def player_turn(hands, deck):
     while True:
         total_value = total(hands, 'Player')
         if busted(total_value):
             return True, total_value
-        
+
         display_cards(hands, False)
         prompt('Do you want to hit or stay? H/S')
         move = input().strip().lower()
@@ -94,7 +94,7 @@ def player_turn(hands, deck):
             hands['Player'].append(deck.pop())
         else:
             return False, total_value
-        
+
 def dealer_turn(hands, deck):
     while True:
         total_value = total(hands, 'Dealer')
@@ -102,7 +102,7 @@ def dealer_turn(hands, deck):
             return True, total_value
         if total_value >= HIT_CAP:
             return False, total_value
-        hands['Dealer'].append(deck.pop())  
+        hands['Dealer'].append(deck.pop())
 
 def determine_winner(deck, hands, scoreboard):
     player_busted, player_total = player_turn(hands, deck)
@@ -132,14 +132,14 @@ def determine_winner(deck, hands, scoreboard):
             prompt('Dealer\'s hand is higher, you lose!')
             scoreboard['Dealer'] += 1
         # Tie
-        else:    
+        else:
             prompt('It\'s a tie!')
 
 def display_scores(scoreboard):
     print()
     prompt('***CURRENT SCORE***')
     prompt(f'PLAYER {scoreboard['Player']} : '
-           f'{scoreboard['Dealer']} DEALER')  
+           f'{scoreboard['Dealer']} DEALER')
 
 def host_round():
     round_count = 1
@@ -149,7 +149,7 @@ def host_round():
         deck = generate_deck()
         hands = { 'Dealer': [deck.pop(), deck.pop()],
                   'Player': [deck.pop(), deck.pop()] }
-        
+
         determine_winner(deck, hands, scoreboard)
         display_scores(scoreboard)
         round_count += 1
@@ -159,9 +159,9 @@ def host_round():
 
 def announce_game_winner(scoreboard):
     if scoreboard['Player'] == MAX_WINS:
-        prompt('You won the game, congratulations! You are quite a card player.')
+        prompt('You won the game, congratulations!')
     else:
-        prompt('Dealer beat you! Better luck next time.')  
+        prompt('Dealer beat you! Better luck next time.')
 
 # Ask if user wants to play another game
 def another_game():
@@ -181,5 +181,6 @@ def play_twenty_one():
         if not another_game():
             prompt('Thank you for playing!')
             break
+        system('clear')
 
 play_twenty_one()        
