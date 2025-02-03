@@ -100,36 +100,29 @@ def dealer_turn(hands, deck):
             return False, total_value
         hands['Dealer'].append(deck.pop())
 
-def determine_winner(deck, hands, scoreboard):
-    player_busted, player_total = player_turn(hands, deck)
-    # Player busted, dealer doesn't play his hand
-    if player_busted:
-        display_cards(hands, True)
-        prompt(f'Your hand value is {player_total}')
-        prompt('You busted, dealer wins!')
-        scoreboard['Dealer'] += 1
-    else:
-        # Announce both hands
-        dealer_busted, dealer_total = dealer_turn(hands, deck)
-        display_cards(hands, True)
-        prompt(f'Your hand value is {player_total}')
-        prompt(f'Dealer\'s hand value is {dealer_total}')
+def announce_hand_values(player_total, dealer_total):
+    prompt(f'Your hand value is {player_total}')
+    prompt(f'Dealer\'s hand value is {dealer_total}')
 
-        # Dealer busted
-        if dealer_busted:
-            prompt('Dealer busted, you win!')
-            scoreboard['Player'] += 1
-        # Player has higher hand
-        elif player_total > dealer_total:
-            prompt('Your hand is higher, you win!')
-            scoreboard['Player'] += 1
-        # Dealer has higher hand
-        elif player_total < dealer_total:
-            prompt('Dealer\'s hand is higher, you lose!')
-            scoreboard['Dealer'] += 1
-        # Tie
-        else:
-            prompt('It\'s a tie!')
+def determine_winner(player_busted, player_total, dealer_busted, dealer_total):
+    if player_busted:
+        prompt('You busted, dealer wins!')
+        return 'Dealer'
+    if dealer_busted:
+        prompt('Dealer busted, you win!')
+        return 'Player'
+    if player_total > dealer_total:
+        prompt('Your hand is higher, you win!')
+        return 'Player'
+    if player_total < dealer_total:
+        prompt('Dealer\'s hand is higher, you lose!')
+        return 'Dealer'
+    prompt('It\'s a tie!')
+    return None
+
+def update_scoreboard(winner, scoreboard):
+    if winner:
+        scoreboard[winner] += 1
 
 def display_scores(scoreboard):
     print()
@@ -146,7 +139,20 @@ def host_round():
         hands = { 'Dealer': [deck.pop(), deck.pop()],
                   'Player': [deck.pop(), deck.pop()] }
 
-        determine_winner(deck, hands, scoreboard)
+        # Player and dealer play hands
+        player_busted, player_total = player_turn(hands, deck)
+        if player_busted:
+            dealer_busted, dealer_total = False, total(hands, 'Dealer')
+        else:
+            dealer_busted, dealer_total = dealer_turn(hands, deck)
+
+        # Final reveal
+        display_cards(hands, True)
+        announce_hand_values(player_total, dealer_total)
+
+        winner = determine_winner(player_busted, player_total,
+                                  dealer_busted, dealer_total)
+        update_scoreboard(winner, scoreboard)
         display_scores(scoreboard)
         round_count += 1
         if MAX_WINS in {scoreboard['Dealer'], scoreboard['Player']}:
