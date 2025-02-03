@@ -150,7 +150,7 @@ def host_round():
         display_cards(hands, True)
         announce_hand_values(player_total, dealer_total)
 
-        winner = determine_winner(player_total,dealer_total)
+        winner = determine_winner(player_total, dealer_total)
         update_scoreboard(winner, scoreboard)
         display_scores(scoreboard)
         round_count += 1
