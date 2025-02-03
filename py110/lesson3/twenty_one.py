@@ -7,8 +7,8 @@ MAX_WINS = 3
 SUITS = '♠♥♦♣'
 VALID_ANSWERS = ('n', 'no', 'y', 'yes')
 VALID_MOVES = ('h', 'hit', 's', 'stay')
-VALUES = ('2', '3', '4', '5', '6', '7', '8', '9', '10',
-          'J', 'Q', 'K', 'A')
+VALUES = { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
+           '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11, }
 
 # Format message
 def prompt(message):
@@ -63,12 +63,7 @@ def total(hands, player):
     value_sum = 0
 
     for value in values:
-        if value == 'A':
-            value_sum += 11
-        elif value in 'JQK':
-            value_sum += 10
-        else:
-            value_sum += int(value)
+        value_sum += VALUES[value]
 
     aces = values.count('A')
     while value_sum > MAX_HAND and aces:
@@ -84,6 +79,7 @@ def player_turn(hands, deck):
             return True, total_value
 
         display_cards(hands, False)
+        prompt(f'Your hand value is {total_value}')
         prompt('Do you want to hit or stay? H/S')
         move = input().strip().lower()
         while move not in VALID_MOVES:
