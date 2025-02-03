@@ -120,10 +120,6 @@ def determine_winner(player_total, dealer_total):
     prompt('It\'s a tie!')
     return None
 
-def update_scoreboard(winner, scoreboard):
-    if winner:
-        scoreboard[winner] += 1
-
 def display_scores(scoreboard):
     print()
     prompt('***CURRENT SCORE***')
@@ -151,12 +147,14 @@ def host_round():
         announce_hand_values(player_total, dealer_total)
 
         winner = determine_winner(player_total, dealer_total)
-        update_scoreboard(winner, scoreboard)
+        if winner:
+            scoreboard[winner] += 1
         display_scores(scoreboard)
-        round_count += 1
         if MAX_WINS in {scoreboard['Dealer'], scoreboard['Player']}:
             announce_game_winner(scoreboard)
             break
+
+        round_count += 1
 
 def announce_game_winner(scoreboard):
     if scoreboard['Player'] == MAX_WINS:
