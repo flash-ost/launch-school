@@ -40,13 +40,11 @@ If you don't know about or understand recursion, don't worry about it. You'll le
 # Return current_num
 
 def fibonacci(n):
-    previous_num = 1
-    current_num = 1
+    previous = 1
+    current = 1
     for _ in range(2, n):
-        tmp = current_num
-        current_num += previous_num
-        previous_num = tmp
-    return current_num
+        previous, current = current, current + previous
+    return current
 
 print(fibonacci(1) == 1)                  # True
 print(fibonacci(2) == 1)                  # True
