@@ -45,13 +45,10 @@ print(unegyptian(egyptian(Fraction(3, 1))) == Fraction(3, 1))
 ## Algorithm
 # Create empty list denominators
 # Initialize denominator to 1
-# Initialize sum_fraction to 0
-# while True:
-#   if (sum_fraction + 1/denominator) is less than or equal to input fraction:
-#       add denomanitor to list
-#       if (sum_fraction + 1/denominator) is equal to input fraction:
-#           break
-#       sum_fraction += 1/denominator
+# while input fraction is not 0:
+#   if input fraction - (1/denominator) is greater or equal to 0:
+#       add denominator to list
+#       subtract (1/denominator) from fraction
 #   increment denominator by 1
 # return denominators list
 
@@ -60,13 +57,10 @@ from fractions import Fraction
 def egyptian(fraction):
     denominators = []
     denominator = 1
-    sum_fraction = 0
-    while True:
-        if Fraction(1, denominator) + sum_fraction <= fraction:
+    while fraction:
+        if fraction - Fraction(1, denominator) >= 0:
             denominators.append(denominator)
-            if Fraction(1, denominator) + sum_fraction == fraction:
-                break
-            sum_fraction += Fraction(1, denominator)
+            fraction -= Fraction(1, denominator)
         denominator += 1
     return denominators        
 
