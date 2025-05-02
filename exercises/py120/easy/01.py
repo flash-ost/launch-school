@@ -51,19 +51,33 @@ Modify this class so that the __init__ method optionally lets you specify a fixe
 class Banner:
     MAX_WIDTH = 115
     def __init__(self, message, width=None):
+        self.message = message
+        self.width = width
 
+    @property
+    def message(self):
+        return self._message
+    
+    @message.setter
+    def message(self, message):
         if len(message) > Banner.MAX_WIDTH - 2:
             raise ValueError('Message too large')
-        self.message = message
+        self._message = message
 
+    @property
+    def width(self):
+        return self._width
+    
+    @width.setter
+    def width(self, width):
         if width:
             if not isinstance(width, int):
                 raise TypeError('Width should be an integer')
-            elif width < len(message) + 2:
+            elif width < len(self.message) + 2:
                 raise ValueError('Banner too narrow')
             elif width > Banner.MAX_WIDTH:
                 raise ValueError('Banner too wide')
-        self.width = width    
+        self._width = width
 
     def __str__(self):
         return "\n".join([self._horizontal_rule(),
@@ -93,7 +107,7 @@ class Banner:
         else:    
             return f'| {self.message} |'
     
-banner = Banner('To boldly go where no one has gone before.', 72)
+banner = Banner('To boldly go where no one has gone before.', 115)
 print(banner)
 # +--------------------------------------------+
 # |                                            |
