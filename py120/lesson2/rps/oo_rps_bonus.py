@@ -1,8 +1,18 @@
 from random import choice
 from os import system
 
+class PromptMixin():
+    def _prompt(self, message):
+        print(f'==> {message}')
+
 class Player:
-    CHOICES = ('rock', 'paper', 'scissors', 'lizard', 'spock')
+    CHOICES = {
+        'r': 'rock',
+        'p': 'paper',
+        'sc': 'scissors',
+        'l': 'lizard',
+        'sp': 'spock',
+    }
 
     def __init__(self, game=None):
         self.move = None
@@ -13,7 +23,7 @@ class HandyAndy(Player):
         super().__init__(game)
 
     def choose(self):
-        self.move = choice(Player.CHOICES)
+        self.move = choice(tuple(Player.CHOICES.values()))
 
 class R2D2(Player):
     def __init__(self, game=None):
@@ -27,7 +37,7 @@ class HAL(Player):
         super().__init__(game)
 
     def choose(self):
-        self.move = choice(['scissors'] * 5 + list(Player.CHOICES))
+        self.move = choice(['scissors'] * 5 + list(Player.CHOICES.values()))
 
 class Daneel(Player):
     def __init__(self, game=None):
@@ -35,22 +45,31 @@ class Daneel(Player):
 
     def choose(self):
         human_moves = self._game.moves['human']
-        self.move = human_moves[-1] if human_moves else choice(Player.CHOICES)
+        self.move = human_moves[-1] if human_moves \
+            else choice(tuple(Player.CHOICES.values()))
 
-class Human(Player):
+class Human(PromptMixin, Player):
     def __init__(self, game=None):
         super().__init__(game)
 
     def choose(self):
-        prompt = '==> Please choose rock, paper, scissors, lizard, or spock: '
+        self._prompt(f'Choose one: {', '.join(Player.CHOICES.values())}')
+        self._prompt(
+            f'You can also type abbreviated names: '
+            f'{', '.join(Player.CHOICES)}'
+        )
+
         while True:
-            move = input(prompt).strip().lower()
-            if move in Player.CHOICES:
+            move = input().strip().lower()
+            if move in Player.CHOICES or move in Player.CHOICES.values():
                 break
-            print(f'{move} is not a valid choice.')
+            self._prompt('Invalid choice.')
+
+        if len(move) <= 2:
+            move = Player.CHOICES[move]
         self.move = move
 
-class RPSGame:
+class RPSGame(PromptMixin):
     PLAY_AGAIN = ('y', 'yes')
     COMPUTERS = (HandyAndy, R2D2, HAL, Daneel)
     WIN_COMBOS = {
@@ -60,7 +79,7 @@ class RPSGame:
         'lizard':   ['paper',    'spock'],
         'spock':    ['rock',     'scissors'],
         }
-    WIN_SCORE = 3
+    WIN_SCORE = 5
 
     def __init__(self):
         self._human = Human()
@@ -68,9 +87,6 @@ class RPSGame:
         self.moves = None
         self._results = None
         self._scoreboard = None
-
-    def _prompt(self, message):
-        print(f'==> {message}')
 
     def _display_welcome_message(self):
         system('clear')
@@ -91,9 +107,11 @@ class RPSGame:
             f'The game is played to {RPSGame.WIN_SCORE} wins, '
             f'ties don\'t count.'
         )
-        input('==> Press ENTER when ready. ')
+        self._prompt('Press ENTER when ready.')
+        input()
 
     def _display_goodbye_message(self):
+        system('clear')
         self._prompt('Thanks for playing Rock Paper Scissors. Goodbye!')
 
     def _host_round(self):
@@ -180,8 +198,8 @@ class RPSGame:
 
     def _play_again(self):
         print()
-        prompt = '==> Would you like to play again? (y/n) '
-        answer = input(prompt).strip().lower()
+        self._prompt('Would you like to play again? (y/n)')
+        answer = input().strip().lower()
         return answer in RPSGame.PLAY_AGAIN
 
     def _prepare_game(self):
