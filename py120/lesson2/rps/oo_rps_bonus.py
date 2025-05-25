@@ -14,44 +14,28 @@ class Player:
         'sp': 'spock',
     }
 
-    def __init__(self, game=None):
+    def __init__(self, human_moves=None):
         self.move = None
-        self._game = game
+        self._human_moves = human_moves
 
 class HandyAndy(Player):
-    def __init__(self, game=None):
-        super().__init__(game)
-
     def choose(self):
         self.move = choice(tuple(Player.CHOICES.values()))
 
 class R2D2(Player):
-    def __init__(self, game=None):
-        super().__init__(game)
-
     def choose(self):
         self.move = 'rock'
 
 class HAL(Player):
-    def __init__(self, game=None):
-        super().__init__(game)
-
     def choose(self):
         self.move = choice(['scissors'] * 5 + list(Player.CHOICES.values()))
 
 class Daneel(Player):
-    def __init__(self, game=None):
-        super().__init__(game)
-
     def choose(self):
-        human_moves = self._game.moves['human']
-        self.move = human_moves[-1] if human_moves \
+        self.move = self._human_moves[-1] if self._human_moves \
             else choice(tuple(Player.CHOICES.values()))
 
 class Human(PromptMixin, Player):
-    def __init__(self, game=None):
-        super().__init__(game)
-
     def choose(self):
         self._prompt(f'Choose one: {', '.join(Player.CHOICES.values())}')
         self._prompt(
@@ -70,8 +54,8 @@ class Human(PromptMixin, Player):
         self.move = move
 
 class RPSGame(PromptMixin):
-    PLAY_AGAIN = ('y', 'yes')
     COMPUTERS = (HandyAndy, R2D2, HAL, Daneel)
+    VALID_ANSWERS = ('y', 'yes', 'n', 'no')
     WIN_COMBOS = {
         'rock':     ['scissors', 'lizard'],
         'paper':    ['rock',     'spock'],
@@ -198,12 +182,14 @@ class RPSGame(PromptMixin):
 
     def _play_again(self):
         print()
-        self._prompt('Would you like to play again? (y/n)')
+        self._prompt('Would you like to play again? (Y/N)')
         answer = input().strip().lower()
-        return answer in RPSGame.PLAY_AGAIN
+        while answer not in RPSGame.VALID_ANSWERS:
+            self._prompt('Please enter Y for yes or N for no.')
+            answer = input().strip().lower()
+        return answer in RPSGame.VALID_ANSWERS[:2]
 
     def _prepare_game(self):
-        self._computer = choice(RPSGame.COMPUTERS)(self)
         self.moves = {
             'human': [],
             'computer': [],
@@ -214,6 +200,7 @@ class RPSGame(PromptMixin):
             'human': 0,
             'computer': 0,
         }
+        self._computer = choice(RPSGame.COMPUTERS)(self.moves['human'])
 
     def play(self):
         self._display_welcome_message()
