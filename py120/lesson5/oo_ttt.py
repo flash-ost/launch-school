@@ -1,0 +1,171 @@
+from os import system
+from random import choice
+
+class Square:
+    INITIAL_MARKER = ' '
+    HUMAN_MARKER = 'X'
+    COMPUTER_MARKER = 'O'
+
+    def __init__(self, marker=INITIAL_MARKER):
+        self.marker = marker
+
+    @property
+    def square(self):
+        return self._marker
+
+    @square.setter
+    def square(self, marker):
+        self._marker = marker
+
+    def is_unused(self):
+        return self.marker == Square.INITIAL_MARKER
+
+    def __str__(self):
+        return self.marker
+
+class Board:
+    SQUARE_NUMBERS = '123456789'
+
+    def __init__(self):
+        self.squares = {num: Square() for num in Board.SQUARE_NUMBERS}
+
+    def count_markers(self, player, keys):
+        markers = [self.squares[key].marker for key in keys]
+        return markers.count(player.marker)
+
+    def display(self):
+        print()
+        print('     |     |')
+        print(f'  {self.squares['1']}  |'
+              f'  {self.squares['2']}  |'
+              f'  {self.squares['3']}')
+        print('     |     |')
+        print('-----+-----+-----')
+        print('     |     |')
+        print(f'  {self.squares['4']}  |'
+              f'  {self.squares['5']}  |'
+              f'  {self.squares['6']}')
+        print('     |     |')
+        print('-----+-----+-----')
+        print('     |     |')
+        print(f'  {self.squares['7']}  |'
+              f'  {self.squares['8']}  |'
+              f'  {self.squares['9']}')
+        print('     |     |')
+        print()
+
+    def is_full(self):
+        return len(self.unused_squares()) == 0
+
+    def mark_square(self, key, marker):
+        self.squares[key].marker = marker
+
+    def unused_squares(self):
+        return [key for key, square in self.squares.items()
+                if square.is_unused()]
+
+class Marker:
+    def __init__(self):
+        # STUB
+        pass
+
+class Player:
+    def __init__(self, marker):
+        self.marker = marker
+
+    @property
+    def marker(self):
+        return self._marker
+
+    @marker.setter
+    def marker(self, value):
+        self._marker = value
+
+class Human(Player):
+    def __init__(self):
+        super().__init__(Square.HUMAN_MARKER)
+
+class Computer(Player):
+    def __init__(self):
+        super().__init__(Square.COMPUTER_MARKER)
+
+class TTTGame:
+    WIN_LINES = ('123', '456', '789', # rows
+                 '147', '258', '369', # columns
+                 '159', '357')        # diagonals
+
+    def __init__(self):
+        self.board = Board()
+        self.human = Human()
+        self.computer = Computer()
+
+    def play(self):
+        self.display_welcome_message()
+        self.board.display()
+
+        while True:
+            self.human_moves()
+            if self.is_game_over():
+                system('clear')
+                self.board.display()
+                break
+
+            self.computer_moves()
+            system('clear')
+            self.board.display()
+            if self.is_game_over():
+                break
+
+        self.display_results()
+        self.display_goodbye_message()
+
+    def display_welcome_message(self):
+        system('clear')
+        print('Welcome to Tic Tac Toe!')
+
+    def display_goodbye_message(self):
+        print('Thanks for playing Tic Tac Toe! Goodbye!')
+
+    def display_results(self):
+        if self.is_winner(self.human):
+            print('You won! Congratulations!')
+        elif self.is_winner(self.computer):
+            print('I won! I won! Take that, human!')
+        else:
+            print('A tie game. How boring.')
+
+    def human_moves(self):
+        valid_choices = self.board.unused_squares()
+        choices_str = ', '.join(valid_choices)
+        prompt = f'Choose a square ({choices_str}): '
+        while True:
+            move = input(prompt)
+            if move in valid_choices:
+                break
+
+            print('Sorry, that was not a valid choice.')
+            print()
+        self.board.mark_square(move, self.human.marker)
+
+    def computer_moves(self):
+        valid_choices = self.board.unused_squares()
+        move = choice(valid_choices)
+        self.board.mark_square(move, self.computer.marker)
+
+    def is_game_over(self):
+        return self.board.is_full() or self.someone_won()
+
+    def is_winner(self, player):
+        for line in TTTGame.WIN_LINES:
+            if self.three_in_row(player, line):
+                return True
+        return False
+
+    def someone_won(self):
+        return self.is_winner(self.human) or self.is_winner(self.computer)
+
+    def three_in_row(self, player, row):
+        return self.board.count_markers(player, row) == 3
+
+game = TTTGame()
+game.play()
