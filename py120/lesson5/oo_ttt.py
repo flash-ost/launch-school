@@ -64,11 +64,6 @@ class Board:
         return [key for key, square in self.squares.items()
                 if square.is_unused()]
 
-class Marker:
-    def __init__(self):
-        # STUB
-        pass
-
 class Player:
     def __init__(self, marker):
         self.marker = marker
@@ -136,7 +131,7 @@ class TTTGame:
 
     def human_moves(self):
         valid_choices = self.board.unused_squares()
-        choices_str = ', '.join(valid_choices)
+        choices_str = self.join_or(valid_choices)
         prompt = f'Choose a square ({choices_str}): '
         while True:
             move = input(prompt)
@@ -160,6 +155,19 @@ class TTTGame:
             if self.three_in_row(player, line):
                 return True
         return False
+    
+    def join_or(sel, sequence, delimiter=', ', join_word='or'):
+        match len(sequence):
+            case 0:
+                return ''
+            case 1:
+                return sequence[0]
+            case 2:
+                return f'{sequence[0]} {join_word} {sequence[1]}'
+            case _:
+                return (f'{delimiter.join(sequence[:-1])}'
+                        f'{delimiter}{join_word} {sequence[-1]}')
+
 
     def someone_won(self):
         return self.is_winner(self.human) or self.is_winner(self.computer)
