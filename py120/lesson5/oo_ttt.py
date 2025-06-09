@@ -85,6 +85,7 @@ class Computer(Player):
         super().__init__(Square.COMPUTER_MARKER)
 
 class TTTGame:
+    VALID_ANSWERS = ('y', 'n')
     WIN_LINES = ('123', '456', '789', # rows
                  '147', '258', '369', # columns
                  '159', '357')        # diagonals
@@ -96,22 +97,28 @@ class TTTGame:
 
     def play(self):
         self.display_welcome_message()
-        self.board.display()
 
         while True:
-            self.human_moves()
-            if self.is_game_over():
+            self.board.display()
+            while True:
+                self.human_moves()
+                if self.is_game_over():
+                    system('clear')
+                    self.board.display()
+                    break
+
+                self.computer_moves()
                 system('clear')
                 self.board.display()
-                break
+                if self.is_game_over():
+                    break
 
-            self.computer_moves()
+            self.display_results()
+
+            if not self.play_again():
+                break
             system('clear')
-            self.board.display()
-            if self.is_game_over():
-                break
-
-        self.display_results()
+            self.board = Board()
         self.display_goodbye_message()
 
     def display_welcome_message(self):
@@ -119,6 +126,7 @@ class TTTGame:
         print('Welcome to Tic Tac Toe!')
 
     def display_goodbye_message(self):
+        system('clear')
         print('Thanks for playing Tic Tac Toe! Goodbye!')
 
     def display_results(self):
@@ -131,7 +139,7 @@ class TTTGame:
 
     def human_moves(self):
         valid_choices = self.board.unused_squares()
-        choices_str = self.join_or(valid_choices)
+        choices_str = self._join_or(valid_choices)
         prompt = f'Choose a square ({choices_str}): '
         while True:
             move = input(prompt)
@@ -156,7 +164,16 @@ class TTTGame:
                 return True
         return False
     
-    def join_or(sel, sequence, delimiter=', ', join_word='or'):
+    def play_again(self):
+        while True:
+            print('Would you like to play again? y/n')
+            answer = input().strip().lower()
+            if answer in TTTGame.VALID_ANSWERS:
+                break
+        return answer == TTTGame.VALID_ANSWERS[0]    
+    
+    @staticmethod
+    def _join_or(sequence, delimiter=', ', join_word='or'):
         match len(sequence):
             case 0:
                 return ''
@@ -167,7 +184,6 @@ class TTTGame:
             case _:
                 return (f'{delimiter.join(sequence[:-1])}'
                         f'{delimiter}{join_word} {sequence[-1]}')
-
 
     def someone_won(self):
         return self.is_winner(self.human) or self.is_winner(self.computer)
