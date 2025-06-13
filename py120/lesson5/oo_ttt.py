@@ -161,7 +161,7 @@ class TTTGame:
 
     def set_difficulty(self):
         print()
-        print('***CHOOSE DIFFICULTY LEVEL***')
+        print('CHOOSE DIFFICULTY LEVEL')
         print('Easy: computer will be very lenient (enter 1)')
         print('Medium: computer will try to stop you from winning (enter 2)')
         print('Hard: computer will play aggresively (enter 3)')
