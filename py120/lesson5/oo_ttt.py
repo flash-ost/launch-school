@@ -10,11 +10,11 @@ class Square:
         self.marker = marker
 
     @property
-    def square(self):
+    def marker(self):
         return self._marker
 
-    @square.setter
-    def square(self, marker):
+    @marker.setter
+    def marker(self, marker):
         self._marker = marker
 
     def is_unused(self):
@@ -113,9 +113,51 @@ class TTTGame:
         self.board = Board()
         self.human = Human()
         self.computer = Computer()
-        self.difficulty = '1'
-        self.first_player = '1'
+        self.difficulty = None
+        self.first_player = None
         self.round_count = 0
+
+    def play(self):
+        self.display_welcome_message()
+        while True:
+            self.host_match()
+            if not self.play_again():
+                break
+            system('clear')
+            print("Let's play again!")
+
+        self.display_goodbye_message()
+
+    def host_match(self):
+        self.prepare_match()
+        while True:
+            self.host_round()
+            if TTTGame.WINS_LIMIT in (self.human.score, self.computer.score):
+                break
+            self.round_count += 1
+            if self.round_count == TTTGame.TOO_MANY_ROUNDS:
+                if self.change_difficulty():
+                    system('clear')
+                    print('Sure, let\'s start anew!')
+                    self.prepare_match()
+                    continue
+                print()
+                print('No problem, you seem to like it. =)')
+            input('Press ENTER when ready for the next round: ')
+            system('clear')
+            self.board.reset()
+        self.display_match_results()
+
+    def prepare_match(self):
+        self.board.reset()
+        self.reset_scores()
+        self.round_count = 0
+        self.set_difficulty()
+        self.choose_who_moves_first()
+
+    def reset_scores(self):
+        self.human.score = 0
+        self.computer.score = 0
 
     def set_difficulty(self):
         print()
@@ -152,42 +194,6 @@ class TTTGame:
         self.first_player = self.human if first == '1' else self.computer
         system('clear')
 
-    def toggle_player(self, player):
-        return self.computer if player == self.human else self.human
-
-    def host_match(self):
-        self.prepare_match()
-        while True:
-            self.host_round()
-            if TTTGame.WINS_LIMIT in (self.human.score, self.computer.score):
-                break
-            self.round_count += 1
-            if self.round_count == TTTGame.TOO_MANY_ROUNDS:
-                if self.change_difficulty():
-                    system('clear')
-                    print('Sure, let\'s start anew!')
-                    self.prepare_match()
-                    continue
-                print()
-                print('No problem, you seem to like it. =)')
-            input('Press ENTER when ready for the next round: ')
-            system('clear')
-            self.board.reset()
-        self.display_match_results()
-
-    def prepare_match(self):
-        self.board.reset()
-        self.reset_scores()
-        self.round_count = 0
-        self.set_difficulty()
-        self.choose_who_moves_first()
-
-    def player_moves(self, player):
-        if player == self.human:
-            self.human_moves()
-        else:
-            self.computer_moves()
-
     def host_round(self):
         current_player = self.first_player
         while True:
@@ -202,60 +208,11 @@ class TTTGame:
         self.display_round_results()
         self.first_player = self.toggle_player(self.first_player)
 
-    def display_round_results(self):
-        if self.is_winner(self.human):
-            print('You won!')
-        elif self.is_winner(self.computer):
-            print('Computer won!')
+    def player_moves(self, player):
+        if player == self.human:
+            self.human_moves()
         else:
-            print('A tie round. How boring.')
-
-        print()
-        print('***SCOREBOARD***')
-        print(f'PLAYER {self.human.score} : '
-              f'{self.computer.score} COMPUTER')
-
-    def update_score(self):
-        if self.is_winner(self.human):
-            self.human.score += 1
-        elif self.is_winner(self.computer):
-            self.computer.score += 1
-
-    def play(self):
-        self.display_welcome_message()
-        while True:
-            self.host_match()
-            if not self.play_again():
-                break
-            system('clear')
-            print("Let's play again!")
-
-        self.display_goodbye_message()
-
-    def display_welcome_message(self):
-        system('clear')
-        print('Welcome to Tic Tac Toe!')
-        print('Your marker is X, computer\'s marker is O.')
-        print(f'Match is played to {TTTGame.WINS_LIMIT} wins. Good luck!')
-
-    def display_goodbye_message(self):
-        system('clear')
-        print('Thanks for playing Tic Tac Toe! Goodbye!')
-
-    def change_difficulty(self):
-        print()
-        print('Tough, right? How about lowering the difficulty? y/n')
-        answer = input().strip().lower()
-        while answer not in TTTGame.VALID_ANSWERS:
-            print('Please enter y for "yes" or n for "no"')
-            answer = input().strip().lower()
-        return answer in TTTGame.VALID_ANSWERS[:2]
-
-    def display_match_results(self):
-        if self.human.score == TTTGame.WINS_LIMIT:
-            print('You are a pro! Congratulations on winning the match!')
-        else:
-            print('We trained him well, huh? Better luck next time.')
+            self.computer_moves()
 
     def human_moves(self):
         valid_choices = self.board.unused_squares()
@@ -365,15 +322,58 @@ class TTTGame:
             answer = input().strip().lower()
         return answer in TTTGame.VALID_ANSWERS[:2]
 
-    def reset_scores(self):
-        self.human.score = 0
-        self.computer.score = 0
+    def change_difficulty(self):
+        print()
+        print('Tough, right? How about lowering the difficulty? y/n')
+        answer = input().strip().lower()
+        while answer not in TTTGame.VALID_ANSWERS:
+            print('Please enter y for "yes" or n for "no"')
+            answer = input().strip().lower()
+        return answer in TTTGame.VALID_ANSWERS[:2]
 
     def someone_won(self):
         return self.is_winner(self.human) or self.is_winner(self.computer)
 
     def three_in_row(self, player, row):
         return self.board.count_markers(player, row) == 3
+
+    def toggle_player(self, player):
+        return self.computer if player == self.human else self.human
+
+    def update_score(self):
+        if self.is_winner(self.human):
+            self.human.score += 1
+        elif self.is_winner(self.computer):
+            self.computer.score += 1
+
+    def display_welcome_message(self):
+        system('clear')
+        print('Welcome to Tic Tac Toe!')
+        print('Your marker is X, computer\'s marker is O.')
+        print(f'Match is played to {TTTGame.WINS_LIMIT} wins. Good luck!')
+
+    def display_round_results(self):
+        if self.is_winner(self.human):
+            print('You won!')
+        elif self.is_winner(self.computer):
+            print('Computer won!')
+        else:
+            print('A tie round.')
+
+        print()
+        print('***SCOREBOARD***')
+        print(f'PLAYER {self.human.score} : '
+              f'{self.computer.score} COMPUTER')
+
+    def display_match_results(self):
+        if self.human.score == TTTGame.WINS_LIMIT:
+            print('You are a pro! Congratulations on winning the match!')
+        else:
+            print('We trained him well, huh? Better luck next time.')
+
+    def display_goodbye_message(self):
+        system('clear')
+        print('Thanks for playing Tic Tac Toe! Goodbye!')
 
     @staticmethod
     def _join_or(sequence, delimiter=', ', join_word='or'):
