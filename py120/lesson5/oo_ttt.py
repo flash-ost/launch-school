@@ -258,6 +258,17 @@ class TTTGame:
         return move
 
     def impossible_computer_move(self, empties):
+        # Take a winning move if available
+        move = self.crucial_third(self.computer)
+        if move:
+            return move
+
+        # Block opponent's winning move
+        move = self.crucial_third(self.human)
+        if move:
+            return move
+
+        # Use minimax to pick best move
         best_score = -float('inf')
         best_square = None
         for square in empties:
@@ -269,13 +280,12 @@ class TTTGame:
                 best_square = square
         return best_square
 
-    # Minimax algorithm for impossible difficulty
     def minimax(self, maximizing):
-        # Base case 1: we have a winner
-        if self.someone_won():
-            return 1 if self.is_winner(self.computer) else -1
-
-        # Base case 2: board is full
+        # Base cases
+        if self.is_winner(self.computer):
+            return 1
+        if self.is_winner(self.human):
+            return -1
         if self.board.is_full():
             return 0
 
@@ -287,6 +297,7 @@ class TTTGame:
                 score = self.minimax(False)
                 self.board.mark_square(square, Square.INITIAL_MARKER)
                 best_score = max(score, best_score)
+            return best_score
         else:
             best_score = float('inf')
             for square in self.board.unused_squares():
@@ -294,7 +305,7 @@ class TTTGame:
                 score = self.minimax(True)
                 self.board.mark_square(square, Square.INITIAL_MARKER)
                 best_score = min(score, best_score)
-        return best_score
+            return best_score
 
     def crucial_third(self, player):
         for line in TTTGame.WIN_LINES:
