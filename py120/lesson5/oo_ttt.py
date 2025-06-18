@@ -297,7 +297,6 @@ class TTTGame:
                 score = self.minimax(False)
                 self.board.mark_square(square, Square.INITIAL_MARKER)
                 best_score = max(score, best_score)
-            return best_score
         else:
             best_score = float('inf')
             for square in self.board.unused_squares():
@@ -305,7 +304,7 @@ class TTTGame:
                 score = self.minimax(True)
                 self.board.mark_square(square, Square.INITIAL_MARKER)
                 best_score = min(score, best_score)
-            return best_score
+        return best_score
 
     def crucial_third(self, player):
         for line in TTTGame.WIN_LINES:
