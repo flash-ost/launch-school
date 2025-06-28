@@ -2,11 +2,9 @@ from random import shuffle
 from os import system
 
 class Card:
-    def __init__(self):
-        # STUB
-        # What attributes does a card need? Rank? Suit?
-        #   Points?
-        pass
+    def __init__(self, suit, value):
+        self.suit = suit
+        self.value = value
 
 class Deck:
     SUITS = '♠♥♦♣'
@@ -14,22 +12,12 @@ class Deck:
            '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11, }
 
     def __init__(self):
-        # STUB
-        # What attributes does a deck need? A collection of
-        #   52 cards?
-        # Some data structure, like a list or dictionary,
-        #   might be required.
         self.cards = self.prepare()
         
     def prepare(self):
-        deck = [suit + value for suit in Deck.SUITS for value in Deck.VALUES]
+        deck = [Card(suit, value) for suit in Deck.SUITS for value in Deck.VALUES]
         shuffle(deck)
         return deck
-
-    def deal(self):
-        # STUB
-        # Does the dealer or the deck deal the cards?
-        pass
 
 class Player():
     def __init__(self):
@@ -37,19 +25,11 @@ class Player():
         self.hand = []
         self.hand_value = 0
 
-    def hit(self):
-        # STUB
-        pass
-
-    def stay(self):
-        # STUB
-        pass
-
     def is_busted(self):
         return self.hand_value > TwentyOneGame.MAX_HAND
 
     def update_hand_value(self):
-        values = [card[1:] for card in self.hand]
+        values = [card.value for card in self.hand]
         value_sum = 0
 
         for value in values:
@@ -64,7 +44,6 @@ class Player():
 
 class Dealer(Player):
     HIT_CAP = 17
-    pass
 
 class TwentyOneGame:
     CREDIT_LIMIT = 3
@@ -77,28 +56,26 @@ class TwentyOneGame:
         self.player = Player()
         self.computer = Dealer()
 
-    def start(self):
-        # SPIKE
+    def host_game(self):
+        while True:
+            self.deal_cards()
+            self.show_cards()
+            self.player_turn()
+            if not self.player.is_busted():
+                self.dealer_turn()
+            self.display_round_result()
+
+            if self.player.credits == 0 or self.player.credits == TwentyOneGame.CREDIT_LIMIT * 2:
+                break
+            self.prepare_round()
+
+    def play(self):
         self.display_welcome_message()
         while True:
-            while True:
-                self.deal_cards()
-                self.show_cards()
-                self.player_turn()
-                if not self.player.is_busted():
-                    self.dealer_turn()
-                self.display_result()
-
-                if self.player.credits == 0 or self.player.credits == TwentyOneGame.CREDIT_LIMIT * 2:
-                    break
-                self.prepare_round()
-            if self.player.credits == 0:
-                print('You lost all your credits. Better luck next time.')
-            else:
-                print('Dealer is out of credits. Congratulations!')
-
+            self.host_game()
             if not self.play_again():
                 break
+            print('Sure, let\'s play again!')
             self.reset_credits()
             self.prepare_round()
         self.display_goodbye_message()
@@ -118,14 +95,13 @@ class TwentyOneGame:
 
             # If not final display, second dealer's card should be face down
             if isinstance(player, Dealer) and not final_display:
-                hand = [hand[0], '??']
+                hand = [hand[0], Card('?', '?')]
             for card in hand:
-                suit = card[0]
-                value_top = card[1:] if card[1:] == '10' else f'{card[1:]} '
-                value_bottom = card[1:] if card[1:] == '10' else f' {card[1:]}'
+                value_top = card.value if card.value == '10' else f'{card.value} '
+                value_bottom = card.value if card.value == '10' else f' {card.value}'
                 rows[0] += '+-----+  '
                 rows[1] += f'|{value_top}   |  '
-                rows[2] += f'|  {suit}  |  '
+                rows[2] += f'|  {card.suit}  |  '
                 rows[3] += f'|   {value_bottom}|  '
                 rows[4] += '+-----+  '
 
@@ -167,7 +143,7 @@ class TwentyOneGame:
         system('clear')
         print('Thank you for playing! Goodbye!')
 
-    def display_result(self):
+    def display_round_result(self):
         self.show_cards(True)
         print(f'Your hand value is {self.player.hand_value}')
         if self.player.is_busted():
@@ -192,6 +168,12 @@ class TwentyOneGame:
         print(f'You: ${self.player.credits}')
         print(f'Dealer: ${self.computer.credits}')
 
+    def display_game_result(self):
+        if self.player.credits == 0:
+            print('You lost all your credits. Better luck next time.')
+        else:
+            print('Dealer is out of credits. Congratulations!')
+
     def update_credits(self, winner, loser):
         winner.credits += 1
         loser.credits -= 1
@@ -208,7 +190,7 @@ class TwentyOneGame:
 
     def play_again(self):
         print()
-        print('Fancy another one? y/n')
+        print('Fancy another game? y/n')
         answer = input().strip().lower()
         while answer not in TwentyOneGame.VALID_ANSWERS:
             print('Please enter y for "yes" or n for "no"')
@@ -220,4 +202,4 @@ class TwentyOneGame:
         self.computer.credits = TwentyOneGame.CREDIT_LIMIT
 
 game = TwentyOneGame()
-game.start()
+game.play()
