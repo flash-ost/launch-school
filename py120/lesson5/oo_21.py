@@ -12,9 +12,9 @@ class Deck:
            '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11, }
 
     def __init__(self):
-        self.prepare()
+        self.reset()
 
-    def prepare(self):
+    def reset(self):
         self.cards = [Card(suit, value) for suit in Deck.SUITS
                                         for value in Deck.VALUES]
         shuffle(self.cards)
@@ -206,7 +206,7 @@ class TwentyOneGame:
         self.dealer.credits = TwentyOneGame.CREDIT_LIMIT
 
     def prepare_round(self):
-        self.deck.prepare()
+        self.deck.reset()
         self.player.reset_hand()
         self.player.reset_hand_value()
         self.dealer.reset_hand()
