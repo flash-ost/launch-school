@@ -25,22 +25,12 @@ class Deck:
 class Player():
     def __init__(self):
         self.credits = TwentyOneGame.CREDIT_LIMIT
-        self.reset_hand()
-        self.reset_hand_value()
-
-    @property
-    def hand_value(self):
-        return self._hand_value
-
-    @hand_value.setter
-    def hand_value(self, value):
-        self._hand_value = value
+        self.hand = []
+        self.hand_value = 0
 
     def reset_hand(self):
         self.hand = []
-
-    def reset_hand_value(self):
-        self._hand_value = 0
+        self.hand_value = 0
 
     def take_card(self, card):
         self.hand.append(card)
@@ -84,7 +74,7 @@ class TwentyOneGame:
             self.player_turn()
             if not self.player.is_busted():
                 self.dealer_turn()
-            self.display_round_result()
+            self.wrap_round()
 
             if self.player.credits == 0 or self.dealer.credits == 0:
                 self.display_game_result()
@@ -153,6 +143,24 @@ class TwentyOneGame:
         while self.dealer.hand_value < Dealer.HIT_CAP:
             self.dealer.take_card(self.deck.deal())
 
+    def wrap_round(self):
+        message, winner, loser = self.determine_round_outcome()
+        if winner and loser:
+            self.update_credits(winner, loser)
+        self.display_round_result(message)
+
+    def determine_round_outcome(self):
+        if self.player.is_busted():
+            return ('You busted, dealer wins!', self.dealer, self.player)
+        if self.dealer.hand_value > TwentyOneGame.MAX_HAND:
+            return ('Dealer busted, you win!', self.player, self.dealer)
+        if self.player.hand_value > self.dealer.hand_value:
+            return ('Your hand is higher, you win!', self.player, self.dealer)
+        if self.player.hand_value < self.dealer.hand_value:
+            return ('Dealer\'s hand is higher, you lose!',
+                    self.dealer, self.player)
+        return ('It\'s a tie!', None, None)
+
     def display_welcome_message(self):
         system('clear')
         print('Let\'s play Twenty-One!')
@@ -166,25 +174,12 @@ class TwentyOneGame:
         system('clear')
         print('Thank you for playing! Goodbye!')
 
-    def display_round_result(self):
+    def display_round_result(self, message):
         self.show_cards(True)
         print(f'Your hand value is {self.player.hand_value}')
-        if self.player.is_busted():
-            print('You busted, dealer wins!')
-            self.update_credits(self.dealer, self.player)
-        else:
-            print(f'Dealer\'s hand value is {self.dealer.hand_value}')
-            if self.dealer.hand_value > TwentyOneGame.MAX_HAND:
-                print('Dealer busted, you win!')
-                self.update_credits(self.player, self.dealer)
-            elif self.player.hand_value > self.dealer.hand_value:
-                print('Your hand is higher, you win!')
-                self.update_credits(self.player, self.dealer)
-            elif self.player.hand_value < self.dealer.hand_value:
-                print('Dealer\'s hand is higher, you lose!')
-                self.update_credits(self.dealer, self.player)
-            else:
-                print('It\'s a tie!')
+        if not self.player.is_busted():
+            print(f"Dealer's hand value is {self.dealer.hand_value}")
+        print(message)
 
         print()
         print('CREDIT BALANCES')
@@ -208,9 +203,7 @@ class TwentyOneGame:
     def prepare_round(self):
         self.deck.reset()
         self.player.reset_hand()
-        self.player.reset_hand_value()
         self.dealer.reset_hand()
-        self.dealer.reset_hand_value()
 
         print()
         input('Press ENTER when ready for the next round: ')
