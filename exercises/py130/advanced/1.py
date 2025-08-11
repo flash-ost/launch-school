@@ -56,6 +56,18 @@ longest_sentence("To be or not to be! Is that the question?")
 #
 # The longest sentence has 6 words.
 """
+def longest_sentence(text):
+    sentences = []
+    sentence = ''
+    for char in text:
+        sentence += char
+        if char in '.!?':
+            sentences.append(sentence.strip())
+            sentence = ''
+
+    longest = max(sentences, key=lambda sentence: len(sentence.split()))
+    print(longest + '\n')
+    print(f'The longest sentence has {len(longest.split())} words.')
 
 long_text = (
     'Four score and seven years ago our fathers brought forth on this '
@@ -84,19 +96,7 @@ longer_text = long_text + (
     '-- that this nation, under God, shall have a new birth of freedom -- '
     'and that government of the people, by the people, for the people, '
     'shall not perish from the earth.'
-)
-def longest_sentence(text):
-    sentences = []
-    sentence = ''
-    for char in text:
-        sentence += char
-        if char in '.!?':
-            sentences.append(sentence.strip())
-            sentence = ''
-
-    longest = max(sentences, key=lambda sentence: len(sentence.split()))
-    print(longest + '\n')
-    print(f'The longest sentence has {len(longest.split())} words.')       
+)    
 
 longest_sentence(long_text)
 # Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in liberty, and dedicated to the proposition that all men are created equal.
