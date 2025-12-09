@@ -1,13 +1,23 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <div style="text-align: center;">
-    <h2>{{ name.capitalize() }}</h2>
-    <strong>Email</strong>: {{ data['email'] }}
-    <br>
-    <strong>Interests</strong>: {{ ', '.join(data['interests']) if data['interests'] else 'none' }}
-  </div>  
+  <div style="text-align: left;">
+    <a href="{{ url_for('users')}}">Back to Users</a>
+  </div>
+  {% if error_message %}
+    <h2 style="text-align: center;">{{ error_message }}</h1>
+  {% else %}
+    <div style="text-align: center;">
+      <h2>{{ name.capitalize() }}</h2>
+      <strong>Email</strong>: {{ data['email'] }}
+      <br>
+      <strong>Interests</strong>: {{ ', '.join(data['interests']) if data['interests'] else 'none' }}
+    </div>  
+  {% endif %}
   <div style="position: absolute; bottom: 3em; left: 0; width: 100%; text-align: center;">
-    {{ others | others_lined | safe }}
+      {% for other in others %}
+        <a href="{{ url_for('user', name=other) }}">{{ other.capitalize() }}</a>
+        {% if not loop.last %} | {% endif %}
+      {% endfor %}
   </div>
 {% endblock %}
