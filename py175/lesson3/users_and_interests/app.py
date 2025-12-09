@@ -13,12 +13,6 @@ def load_data():
         g.data = yaml.safe_load(file)
     g.count = calculate_statistics()
 
-@app.template_filter('others_lined')
-def others_lined(others):
-    links = [f'<a href="{url_for("user", name=other)}">{other.capitalize()}</a>'
-             for other in others]
-    return ' | '.join(links)
-
 @app.route('/')
 def home():
     return redirect(url_for('users'))
@@ -37,7 +31,7 @@ def user(name):
                                data=data,
                                others=others,
                                count=g.count)
-    except:
+    except KeyError:
         error_message = 'Sorry, there is no such user. ' \
                         'Try one of the links at the bottom.'
         return render_template('user.html',
