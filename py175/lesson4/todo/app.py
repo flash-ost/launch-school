@@ -131,7 +131,7 @@ def delete_todo(lst, todo, list_id, todo_id):
 def mark_list_done(lst, list_id):
     mark_all_done(lst)
     session['lists'] = sort_items(session['lists'], is_list_completed)
-    flash('All todos has been marked as done.', 'success')
+    flash('All todos have been marked as done.', 'success')
     session.modified = True
     return redirect(url_for('show_list', list_id=list_id))
 
