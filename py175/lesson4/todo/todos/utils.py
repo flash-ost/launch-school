@@ -1,7 +1,9 @@
 def delete_todo_by_id(todo_id, lst):
     lst['todos'] = [todo for todo in lst['todos'] if todo['id'] != todo_id]
 
-def error_for_list_title(title, lists):
+def error_for_list_title(title, lists, current=None):
+    if title == current:
+        return 'You entered the same title'
     if any(lst['title'] == title for lst in lists):
         return 'The title must be unique.'
     elif not 1 <= len(title) <= 100:

@@ -78,7 +78,7 @@ def create_list():
                              'title': title,
                              'todos': []})
     session['lists'] = sort_items(session['lists'], is_list_completed)
-    flash('The list has been created.', 'success')
+    flash('The list have been created.', 'success')
     session.modified = True
     return redirect(url_for('get_lists'))
 
@@ -153,7 +153,7 @@ def delete_list(lst, list_id):
 @require_list
 def rename_list(lst, list_id):
     title = request.form['list_title'].strip()
-    error_message = error_for_list_title(title, session['lists'])
+    error_message = error_for_list_title(title, session['lists'], lst['title'])
     if error_message:
         flash(error_message, 'error')
         return render_template('edit-list.html', lst=lst, title=title)
