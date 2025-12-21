@@ -78,7 +78,7 @@ def create_list():
                              'title': title,
                              'todos': []})
     session['lists'] = sort_items(session['lists'], is_list_completed)
-    flash('The list have been created.', 'success')
+    flash('List has been created.', 'success')
     session.modified = True
     return redirect(url_for('get_lists'))
 
@@ -145,7 +145,7 @@ def edit_list(lst, list_id):
 def delete_list(lst, list_id):
     session['lists'] = [lst for lst in session['lists'] if lst['id'] != list_id]
     session['lists'] = sort_items(session['lists'], is_list_completed)
-    flash('List deleted.', 'success')
+    flash('List has been deleted.', 'success')
     session.modified = True
     return redirect(url_for('get_lists'))
 
