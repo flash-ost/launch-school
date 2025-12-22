@@ -22,6 +22,7 @@ from todos.utils import (
 from functools import wraps
 from uuid import uuid4
 from werkzeug.exceptions import NotFound
+import os
 
 app = Flask(__name__)
 app.secret_key = 'secret1'
@@ -165,4 +166,7 @@ def rename_list(lst, list_id):
     return redirect(url_for('show_list', list_id=list_id))        
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5003)
+    if os.environ.get('FLASK_ENV') == 'production':
+        app.run(debug=False)
+    else:
+        app.run(debug=True, port=5003)
