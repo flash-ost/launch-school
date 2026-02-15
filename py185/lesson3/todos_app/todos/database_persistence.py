@@ -11,7 +11,7 @@ class DatabasePersistence:
     def __init__(self):
         self._setup_schema()
     
-    def _find_todos_for_list(self, list_id):
+    def find_todos_for_list(self, list_id):
         query = 'SELECT id, title, completed FROM todos WHERE list_id = %s'
         logger.info('Executing query: %s with list_id: %s', query, list_id)
         with self._database_connect() as conn:
@@ -66,7 +66,15 @@ class DatabasePersistence:
             connection.close()
 
     def all_lists(self):
-        query = 'TABLE lists'
+        query = """
+            SELECT lists.*,
+                COUNT(todos.id) AS todos_count,
+                COUNT(NULLIF(todos.completed, True)) AS todos_remaining
+            FROM lists
+            LEFT JOIN todos ON todos.list_id = lists.id
+            GROUP BY lists.id
+            ORDER BY lists.title
+        """
         logger.info('Executing query: %s', query)
         with self._database_connect() as conn:
             with conn.cursor(cursor_factory=DictCursor) as cursor:
@@ -75,19 +83,26 @@ class DatabasePersistence:
 
         lists = [dict(result) for result in results]
         for lst in lists:
-            lst['todos'] = self._find_todos_for_list(lst['id'])
+            lst['todos'] = self.find_todos_for_list(lst['id'])
         return lists
 
     def find_list(self, list_id):
         try:
-            query = 'SELECT * FROM lists WHERE id = %s'
+            query ="""
+                SELECT lists.*,
+                        COUNT(todos.id) AS todos_count,
+                        COUNT(NULLIF(todos.completed, True)) AS todos_remaining
+                FROM lists
+                LEFT JOIN todos ON todos.list_id = lists.id
+                WHERE lists.id = %s
+                GROUP BY lists.id
+                ORDER BY lists.title;
+            """
             logger.info('Executing query: %s with id: %s', query, list_id)
             with self._database_connect() as conn:
                 with conn.cursor(cursor_factory=DictCursor) as cursor:
                     cursor.execute(query, (list_id,))
                     lst = dict(cursor.fetchone())
-            
-            lst['todos'] = self._find_todos_for_list(list_id)
             return lst
         except TypeError:
             return None
