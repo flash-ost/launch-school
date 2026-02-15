@@ -77,15 +77,18 @@ class DatabasePersistence:
         return lists
 
     def find_list(self, list_id):
-        query = 'SELECT * FROM lists WHERE id = %s'
-        logger.info('Executing query: %s with id: %s', query, list_id)
-        with self._database_connect() as conn:
-            with conn.cursor(cursor_factory=DictCursor) as cursor:
-                cursor.execute(query, (list_id,))
-                lst = dict(cursor.fetchone())
-        
-        lst['todos'] = self._find_todos_for_list(list_id)
-        return lst
+        try:
+            query = 'SELECT * FROM lists WHERE id = %s'
+            logger.info('Executing query: %s with id: %s', query, list_id)
+            with self._database_connect() as conn:
+                with conn.cursor(cursor_factory=DictCursor) as cursor:
+                    cursor.execute(query, (list_id,))
+                    lst = dict(cursor.fetchone())
+            
+            lst['todos'] = self._find_todos_for_list(list_id)
+            return lst
+        except:
+            return None
     
     def create_new_list(self, title):
         query = 'INSERT INTO lists (title) VALUES (%s)'

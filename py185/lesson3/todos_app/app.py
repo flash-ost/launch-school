@@ -144,7 +144,7 @@ def delete_list(lst, list_id):
 @require_list
 def update_list(lst, list_id):
     title = request.form["list_title"].strip()
-    current_title = g.storage.find_list(list_id)['title']
+    current_title = lst['title']
     error = error_for_list_title(title, g.storage.all_lists(), current_title)
     if error:
         flash(error, "error")
