@@ -87,7 +87,7 @@ class DatabasePersistence:
             
             lst['todos'] = self._find_todos_for_list(list_id)
             return lst
-        except:
+        except TypeError:
             return None
     
     def create_new_list(self, title):
