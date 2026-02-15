@@ -1,5 +1,7 @@
-def error_for_list_title(title, lists):
-    if any(lst['title'] == title for lst in lists):
+def error_for_list_title(title, lists, current_title=False):
+    if title == current_title:
+        return 'You entered the same title.'
+    elif any(lst['title'] == title for lst in lists):
         return "The title must be unique."
     elif not 1 <= len(title) <= 100:
         return "The title must be between 1 and 100 characters"
