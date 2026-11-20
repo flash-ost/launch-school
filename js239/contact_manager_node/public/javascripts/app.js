@@ -43,6 +43,21 @@ async function renderHome() {
       }).map(card => card.classList.add('d-none'));
     }
   })
+
+  cardsContainer.addEventListener('click', event => {
+  if (event.target.href && event.target.href.includes('#contacts/delete/')) {
+    if (confirm('Do you want to delete this contact?')) deleteContact(event.target);
+  }
+
+  const clearButton = document.getElementById('clear-filter');
+  clearButton.addEventListener('click', event => {
+    const input = searchField.value.trim().toLowerCase();
+    
+    cards.forEach(card => {
+      card.classList.toggle('d-none', !nameMatches(card, input));
+    });
+  });
+});
 }
 
 async function renderContactForm() {
@@ -106,6 +121,8 @@ async function saveContact(form) {
     if (!response.ok) {
       throw Error('Could not save contact');
     }
+
+    alert('Contact saved successfully!');
   } catch (error) {
     alert(error.message);
   } finally {
@@ -124,9 +141,12 @@ async function deleteContact(target) {
       },
       body: data,
     });
+
     if (!response.ok) {
       throw Error('Could not delete contact');
     }
+
+    alert('Contact deleted successfully!');
   } catch (error) {
     alert(error.message);
   } finally {
@@ -146,6 +166,10 @@ function tagMatches(card, tag) {
     .includes(tag);
 }
 
+function clearFilter() {
+
+}
+
 // Listen for navigation
 window.addEventListener('hashchange', renderPage);
 
@@ -155,10 +179,4 @@ renderPage();
 document.addEventListener('submit', event => {
   event.preventDefault();
   saveContact(event.target);
-});
-
-document.addEventListener('click', event => {
-  if (event.target.href && event.target.href.includes('#contacts/delete/')) {
-    deleteContact(event.target);
-  }
 });
