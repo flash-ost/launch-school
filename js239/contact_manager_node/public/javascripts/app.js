@@ -42,13 +42,11 @@ async function renderHome() {
         return !card.classList.contains('d-none') && !tagMatches(card, event.target.textContent);
       }).forEach(card => card.classList.add('d-none'));
     }
-  })
 
-  cardsContainer.addEventListener('click', event => {
-    if (event.target.href && event.target.href.includes('#contacts/delete/')) {
+    if (event.target.classList.contains('delete')) {
       if (confirm('Do you want to delete this contact?')) deleteContact(event.target);
     }
-  });
+  })
 
   const clearButton = document.getElementById('clear-filter');
   clearButton.addEventListener('click', () => {
@@ -131,13 +129,9 @@ async function saveContact(form) {
 }
 
 async function deleteContact(target) {
-  const id = Number(target.href.split('/').pop());
   try {
-    const response = await fetch(`/api/contacts/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+    const response = await fetch(`/api/contacts/${target.getAttribute('data-id')}`, {
+      method: 'DELETE'
     });
 
     if (!response.ok) {
