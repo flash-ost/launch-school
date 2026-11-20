@@ -18,6 +18,8 @@ async function renderHome() {
   );
 
   const response = await fetch('/api/contacts');
+  if (!response.ok) throw new Error('Could not load contacts');
+  
   const contacts = await response.json();
   contacts.forEach(contact => {
     contact.tags = contact.tags ? contact.tags.split(',').map(tag => tag.trim()) : null;
