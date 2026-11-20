@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "full_name": "Naveed Fida",
+    "email": "nf@example.com",
+    "phone_number": "12345678901",
+    "tags": "work,friend"
+  },
+  {
+    "id": 2,
+    "full_name": "Victor Reyes",
+    "email": "vpr@example.com",
+    "phone_number": "09876543210",
+    "tags": "work,friend"
+  },
+  {
+    "id": 3,
+    "full_name": "Pete Hanson",
+    "email": "ph@example.com",
+    "phone_number": "54321098761",
+    "tags": ""
+  },
+  {
+    "full_name": "John kent",
+    "phone_number": "fds",
+    "email": "dsd@dsd.com",
+    "tags": "dfd, 43949v",
+    "id": 4
+  },
+  {
+    "full_name": "John kent",
+    "phone_number": "sd",
+    "email": "dsd@dsd.com",
+    "tags": "sd",
+    "id": 5
+  },
+  {
+    "full_name": "as",
+    "phone_number": "as",
+    "email": "sas@sa.com",
+    "tags": "as",
+    "id": 6
+  },
+  {
+    "full_name": "as",
+    "phone_number": "as",
+    "email": "sas@sa.com",
+    "tags": "as",
+    "id": 7
+  },
+  {
+    "full_name": "as",
+    "phone_number": "as",
+    "email": "sa@ds.com",
+    "tags": "sasdasdas",
+    "id": 8
+  },
+  {
+    "full_name": "as",
+    "phone_number": "as",
+    "email": "sa@ds.com",
+    "tags": "sasdasdas",
+    "id": 9
+  },
+  {
+    "full_name": "sd",
+    "phone_number": "as",
+    "email": "dl@slkd.com",
+    "tags": "as",
+    "id": 10
+  },
+  {
+    "full_name": "test",
+    "phone_number": "as",
+    "email": "sd@ds.com",
+    "tags": "as",
+    "id": 11
+  },
+  {
+    "full_name": "test10",
+    "phone_number": "sd",
+    "email": "cs@d.com",
+    "tags": "sd",
+    "id": 12
+  }
+]
