@@ -55,7 +55,7 @@ async function renderHome() {
     cards.forEach(card => {
       card.classList.toggle('d-none', !nameMatches(card, input));
     });
-});
+  });
 }
 
 async function renderContactForm() {
@@ -124,7 +124,7 @@ async function saveContact(form) {
   } catch (error) {
     alert(error.message);
   } finally {
-    await renderHome();
+    window.location.hash = '';
   }
 }
 
@@ -142,7 +142,7 @@ async function deleteContact(target) {
   } catch (error) {
     alert(error.message);
   } finally {
-    await renderHome();
+    window.location.hash = '';
   }
 }
 
