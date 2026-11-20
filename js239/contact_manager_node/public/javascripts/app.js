@@ -17,7 +17,7 @@ async function renderHome() {
     '/templates/home.handlebars'
   );
 
-  const response = await fetch('http://localhost:3000/api/contacts');
+  const response = await fetch('/api/contacts');
   const contacts = await response.json();
   contacts.forEach(contact => {
     contact.tags = contact.tags ? contact.tags.split(',').map(tag => tag.trim()) : null;
@@ -52,7 +52,7 @@ async function renderHome() {
   const clearButton = document.getElementById('clear-filter');
   clearButton.addEventListener('click', event => {
     const input = searchField.value.trim().toLowerCase();
-    
+
     cards.forEach(card => {
       card.classList.toggle('d-none', !nameMatches(card, input));
     });
@@ -134,7 +134,7 @@ async function deleteContact(target) {
   const id = Number(target.href.split('/').pop());
   const data = JSON.stringify({id});
   try {
-    const response = await fetch(`http://localhost:3000/api/contacts/${id}`, {
+    const response = await fetch(`/api/contacts/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
