@@ -40,7 +40,7 @@ async function renderHome() {
     if (event.target.classList.contains('badge')) {
       cards.filter(card => {
         return !card.classList.contains('d-none') && !tagMatches(card, event.target.textContent);
-      }).map(card => card.classList.add('d-none'));
+      }).forEach(card => card.classList.add('d-none'));
     }
   })
 
@@ -50,7 +50,7 @@ async function renderHome() {
   }
 
   const clearButton = document.getElementById('clear-filter');
-  clearButton.addEventListener('click', event => {
+  clearButton.addEventListener('click', () => {
     const input = searchField.value.trim().toLowerCase();
 
     cards.forEach(card => {
