@@ -45,9 +45,10 @@ async function renderHome() {
   })
 
   cardsContainer.addEventListener('click', event => {
-  if (event.target.href && event.target.href.includes('#contacts/delete/')) {
-    if (confirm('Do you want to delete this contact?')) deleteContact(event.target);
-  }
+    if (event.target.href && event.target.href.includes('#contacts/delete/')) {
+      if (confirm('Do you want to delete this contact?')) deleteContact(event.target);
+    }
+  });
 
   const clearButton = document.getElementById('clear-filter');
   clearButton.addEventListener('click', () => {
@@ -56,7 +57,6 @@ async function renderHome() {
     cards.forEach(card => {
       card.classList.toggle('d-none', !nameMatches(card, input));
     });
-  });
 });
 }
 
@@ -132,14 +132,12 @@ async function saveContact(form) {
 
 async function deleteContact(target) {
   const id = Number(target.href.split('/').pop());
-  const data = JSON.stringify({id});
   try {
     const response = await fetch(`/api/contacts/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: data,
     });
 
     if (!response.ok) {
@@ -164,10 +162,6 @@ function tagMatches(card, tag) {
   return Array.from(card.querySelectorAll('.badge'))
     .map(badge => badge.textContent)
     .includes(tag);
-}
-
-function clearFilter() {
-
 }
 
 // Listen for navigation
